@@ -1,0 +1,110 @@
+﻿@page "/"
+@using Google.Cloud.Firestore
+@inject FirestoreDb db
+
+<PageTitle>Command Center</PageTitle>
+
+@if (_isLoading)
+{
+    <div class="d-flex justify-content-center align-items-center mt-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+}
+else
+{
+    <div class="dashboard-analytics container mt-4">
+        <div class="mb-4">
+            <h2 class="console-title">Platform Overview</h2>
+            <p class="console-subtitle">Real-time telemetry vectors tracking user growth and marketplace health.</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card shadow-sm metric-card">
+                    <div class="card-body p-4">
+                        <span class="metric-label">Total Registered Users</span>
+                        <h1 class="metric-value">@TotalUsers</h1>
+                        <span class="metric-subtext text-success-custom">Active campus operator accounts</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card shadow-sm metric-card">
+                    <div class="card-body p-4">
+                        <span class="metric-label">Circulating Listings</span>
+                        <h1 class="metric-value">@TotalListings</h1>
+                        <span class="metric-subtext text-primary-custom">Live discoverable item assets</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card shadow-sm metric-card">
+                    <div class="card-body p-4">
+                        <span class="metric-label">Active Marketplace Value</span>
+                        <h1 class="metric-value">RM @TotalValue.ToString("N2")</h1>
+                        <span class="metric-subtext text-muted-custom">Excludes sold/audited lifecycles</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .dashboard-analytics { font-family: -apple-system, sans-serif; }
+    .console-title { font-size: 1.6rem; font-weight: 800; color: #1E293B; }
+    .console-subtitle { font-size: 0.92rem; color: #64748B; }
+    .metric-card { border-radius: 10px; background: #FFFFFF; border: 1px solid #E2E8F0 !important; }
+    .metric-label { font-size: 0.8rem; font-weight: 700; color: #64748B; text-transform: uppercase; display: block; margin-bottom: 10px; }
+    .metric-value { font-size: 2.1rem; font-weight: 800; color: #0F172A; margin: 0 0 6px 0; }
+    .text-success-custom { color: #16A34A !important; }
+    .text-primary-custom { color: #0284C7 !important; }
+</style>
+
+@code {
+    private int TotalUsers = 0;
+    private int TotalListings = 0;
+    private double TotalValue = 0;
+    private bool _isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _isLoading = true;
+
+            // 1. Aggregation Query for Users
+            CollectionReference usersRef = db.Collection("users");
+            AggregateQuery usersCountQuery = usersRef.Count();
+            AggregateQuerySnapshot usersSnapshot = await usersCountQuery.GetSnapshotAsync();
+            TotalUsers = (int)(usersSnapshot.Count ?? 0);
+
+            // 2. Query Circulating Listings
+            Query circulatingQuery = db.Collection("listings").WhereIn("status", new[] { "Available", "Reserved", "Disputed" });
+            QuerySnapshot listingsSnapshot = await circulatingQuery.GetSnapshotAsync();
+            TotalListings = listingsSnapshot.Documents.Count;
+
+            // 3. Defensive Price Summation
+            double livePlatformSum = 0;
+            foreach (var doc in listingsSnapshot.Documents)
+            {
+                // Robust parsing for double/long Firestore types
+                if (doc.TryGetValue<double>("price", out double dPrice)) livePlatformSum += dPrice;
+                else if (doc.TryGetValue<long>("price", out long lPrice)) livePlatformSum += (double)lPrice;
+            }
+            TotalValue = livePlatformSum;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Dashboard Load Error: {ex.Message}");
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+}

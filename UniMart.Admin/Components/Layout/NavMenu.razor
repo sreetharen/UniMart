@@ -1,0 +1,37 @@
+﻿<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="" style="font-weight: 800; letter-spacing: -0.5px;">
+            <span style="color: #38BDF8;">Uni</span>Mart.Admin
+        </a>
+    </div>
+</div>
+
+<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+
+<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+    <nav class="nav flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="bi bi-speedometer2" aria-hidden="true"></span> Dashboard Analytics
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="withdrawals">
+                <span class="bi bi-cash-stack" aria-hidden="true"></span> Payout Management
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="moderation">
+                <span class="bi bi-shield-check" aria-hidden="true"></span> Platform Moderation
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="escrow">
+                <span class="bi bi-safe2" aria-hidden="true"></span> Transaction Security
+            </NavLink>
+        </div>
+    </nav>
+</div>

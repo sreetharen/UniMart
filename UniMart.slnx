@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="UniMart.Admin/UniMart.Admin.csproj" Id="401463a4-763e-44fa-b232-7de178eba13e" />
+  <Project Path="UniMart/UniMart.csproj">
+    <Deploy Solution="Debug|*" />
+  </Project>
+</Solution>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:zxing="clr-namespace:ZXing.Net.Maui.Controls;assembly=ZXing.Net.Maui.Controls"
+             x:Class="UniMart.Views.SellerScannerPage"
+             BackgroundColor="Black"
+             Title="Scan Buyer's QR"
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False">
+    <Grid>
+        <zxing:CameraBarcodeReaderView x:Name="CameraScanner"
+                                       BarcodesDetected="CameraScanner_BarcodesDetected"
+                                       IsDetecting="True"
+                                       VerticalOptions="FillAndExpand"
+                                       HorizontalOptions="FillAndExpand" />
+
+        <Grid RowDefinitions="Auto, *, Auto" Padding="20,50,20,40">
+
+            <Grid Grid.Row="0" ColumnDefinitions="40, *, 40">
+                <Border Grid.Column="0" HeightRequest="40" WidthRequest="40" StrokeShape="RoundRectangle 20" BackgroundColor="White" StrokeThickness="0">
+                    <ImageButton Source="back_icon.png" Clicked="OnBackClicked" Padding="10" BackgroundColor="Transparent"/>
+                </Border>
+
+                <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center">
+                    <Label Text="Scan to Complete" FontSize="20" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center"/>
+                    <Label Text="Align buyer's QR code in frame" FontSize="12" TextColor="#D0E1F9" HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Grid>
+
+            <Border Grid.Row="1" Stroke="White" StrokeThickness="3" StrokeShape="RoundRectangle 20" WidthRequest="250" HeightRequest="250" BackgroundColor="Transparent" HorizontalOptions="Center" VerticalOptions="Center">
+                <Border.Shadow>
+                    <Shadow Brush="Black" Offset="0,0" Radius="50" Opacity="0.5"/>
+                </Border.Shadow>
+            </Border>
+        </Grid>
+
+        <Grid x:Name="ProcessingOverlay" BackgroundColor="#CC000000" IsVisible="False" ZIndex="10">
+            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="15">
+                <ActivityIndicator IsRunning="True" Color="#007BFF" HeightRequest="50" WidthRequest="50"/>
+                <Label Text="Verifying Secure Token..." TextColor="White" FontSize="18" FontAttributes="Bold" />
+            </VerticalStackLayout>
+        </Grid>
+
+        <Grid x:Name="CustomAlertBox" ZIndex="200" VerticalOptions="Start" HorizontalOptions="Center" Margin="0,20,0,0" TranslationY="-150">
+            <Border x:Name="AlertBorder" StrokeThickness="0" StrokeShape="RoundRectangle 12" BackgroundColor="#198754" Padding="20,15" WidthRequest="340">
+                <Border.Shadow>
+                    <Shadow Brush="Black" Offset="0,4" Radius="12" Opacity="0.15" />
+                </Border.Shadow>
+                <HorizontalStackLayout Spacing="15">
+                    <Label x:Name="AlertIcon" Text="✓" FontSize="20" FontAttributes="Bold" TextColor="White" VerticalOptions="Center"/>
+                    <VerticalStackLayout VerticalOptions="Center" Spacing="2">
+                        <Label x:Name="AlertTitle" Text="Success" FontSize="14" FontAttributes="Bold" TextColor="White"/>
+                        <Label x:Name="AlertMessage" Text="Your item is live!" FontSize="12" TextColor="White" Opacity="0.9"/>
+                    </VerticalStackLayout>
+                </HorizontalStackLayout>
+            </Border>
+        </Grid>
+
+    </Grid>
+</ContentPage>

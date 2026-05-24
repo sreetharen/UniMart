@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="UniMart.Views.SellerDashboardPage"
+             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource OffBlack}}"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto, Auto, *">
+        <Border Grid.Row="0" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}" StrokeThickness="0" Padding="15,20,15,15">
+            <Border.Shadow>
+                <Shadow Brush="Black" Offset="0,2" Radius="10" Opacity="0.05" />
+            </Border.Shadow>
+            <Grid ColumnDefinitions="40, *, 40">
+                <Border Grid.Column="0" HeightRequest="40" WidthRequest="40" StrokeShape="RoundRectangle 20" BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}">
+                    <ImageButton Source="back_icon.png" Clicked="OnBackClicked" Padding="10" BackgroundColor="Transparent"/>
+                </Border>
+                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" HorizontalOptions="Center">
+                    <Label Text="Inventory Control" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" HorizontalOptions="Center"/>
+                    <Label Text="Track listings &amp; manage handovers" FontSize="11" TextColor="{StaticResource Gray500}" HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="1" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource OffBlack}}" Padding="10,10" StrokeThickness="0">
+            <Grid x:Name="PillContainer" ColumnDefinitions="*, *, *, *" Margin="10,0" Padding="0,0,0,10">
+                <VerticalStackLayout x:Name="TabAll" Grid.Column="0" Spacing="8" BackgroundColor="Transparent">
+                    <Label Text="ALL" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource Primary}" HorizontalOptions="Center"/>
+                    <BoxView HeightRequest="3" Color="{StaticResource Primary}" HorizontalOptions="Fill" CornerRadius="1.5"/>
+                    <VerticalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnTabTapped" CommandParameter="All"/>
+                    </VerticalStackLayout.GestureRecognizers>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout x:Name="TabAvailable" Grid.Column="1" Spacing="8" BackgroundColor="Transparent">
+                    <Label Text="AVAILABLE" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource Gray500}" HorizontalOptions="Center"/>
+                    <BoxView HeightRequest="3" Color="Transparent" HorizontalOptions="Fill" CornerRadius="1.5"/>
+                    <VerticalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnTabTapped" CommandParameter="Available"/>
+                    </VerticalStackLayout.GestureRecognizers>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout x:Name="TabReserved" Grid.Column="2" Spacing="8" BackgroundColor="Transparent">
+                    <Label Text="RESERVED" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource Gray500}" HorizontalOptions="Center"/>
+                    <BoxView HeightRequest="3" Color="Transparent" HorizontalOptions="Fill" CornerRadius="1.5"/>
+                    <VerticalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnTabTapped" CommandParameter="Reserved"/>
+                    </VerticalStackLayout.GestureRecognizers>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout x:Name="TabSold" Grid.Column="3" Spacing="8" BackgroundColor="Transparent">
+                    <Label Text="SOLD" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource Gray500}" HorizontalOptions="Center"/>
+                    <BoxView HeightRequest="3" Color="Transparent" HorizontalOptions="Fill" CornerRadius="1.5"/>
+                    <VerticalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnTabTapped" CommandParameter="Sold"/>
+                    </VerticalStackLayout.GestureRecognizers>
+                </VerticalStackLayout>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="2">
+            <ActivityIndicator x:Name="LoadingIndicator" IsRunning="True" Color="{StaticResource Primary}" VerticalOptions="Center" HorizontalOptions="Center" ZIndex="10"/>
+
+            <RefreshView x:Name="DashboardRefreshView" Refreshing="OnRefreshing" RefreshColor="{StaticResource Primary}">
+                <CollectionView x:Name="MyItemsCollectionView" Margin="20,10,20,10">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="20" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border StrokeThickness="0" StrokeShape="RoundRectangle 24" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}" Margin="0,0,0,10">
+                                <Border.Shadow>
+                                    <Shadow Brush="Black" Offset="0,10" Radius="20" Opacity="0.06" />
+                                </Border.Shadow>
+
+                                <VerticalStackLayout Spacing="0">
+                                    <VerticalStackLayout Padding="20" Spacing="15">
+                                        <Grid ColumnDefinitions="Auto, *">
+                                            <Border Grid.Column="0" BackgroundColor="{Binding StatusColor}" StrokeThickness="0" StrokeShape="RoundRectangle 8" Padding="10,4" HorizontalOptions="Start">
+                                                <Label Text="{Binding StatusText}" FontSize="9" FontAttributes="Bold" TextColor="White" CharacterSpacing="1"/>
+                                            </Border>
+                                            <Label Grid.Column="1" Text="{Binding FormattedDate}" FontSize="11" TextColor="{StaticResource Gray500}" HorizontalOptions="End" VerticalOptions="Center"/>
+                                        </Grid>
+
+                                        <Grid ColumnDefinitions="70, *, Auto" ColumnSpacing="15">
+                                            <Border Grid.Column="0" HeightRequest="70" WidthRequest="70" StrokeShape="RoundRectangle 15" StrokeThickness="0">
+                                                <Image Source="{Binding CoverImage}" Aspect="AspectFill"/>
+                                            </Border>
+                                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                                <Label Text="{Binding Title}" FontSize="16" FontAttributes="Bold" MaxLines="1"/>
+                                                <Label Text="{Binding Price, StringFormat='RM {0:F2}'}" FontSize="15" FontAttributes="Bold" TextColor="{StaticResource Primary}"/>
+                                            </VerticalStackLayout>
+                                        </Grid>
+                                    </VerticalStackLayout>
+
+                                    <VerticalStackLayout Padding="20,0,20,20" Spacing="12">
+
+                                        <Grid ColumnDefinitions="*, *" ColumnSpacing="15" IsVisible="{Binding IsAvailable}">
+                                            <Button Text="Edit Item" BackgroundColor="{StaticResource Primary}" TextColor="White" FontAttributes="Bold" CornerRadius="25" HeightRequest="50" CommandParameter="{Binding .}" Clicked="OnEditListingClicked"/>
+                                            <Button Grid.Column="1" Text="Delete" BackgroundColor="Transparent" TextColor="#DC3545" BorderColor="#DC3545" BorderWidth="1.5" FontAttributes="Bold" CornerRadius="25" HeightRequest="50" CommandParameter="{Binding .}" Clicked="OnDeleteListingClicked"/>
+                                        </Grid>
+
+                                        <VerticalStackLayout Spacing="12" IsVisible="{Binding IsReserved}">
+                                            <Button Text="SCAN BUYER QR" BackgroundColor="{StaticResource Primary}" TextColor="White" FontAttributes="Bold" CornerRadius="25" HeightRequest="50" CommandParameter="{Binding .}" Clicked="OnScanQrClicked"/>
+                                            <HorizontalStackLayout HorizontalOptions="Center" Spacing="20">
+                                                <Button Text="Open Chat" BackgroundColor="Transparent" TextColor="{StaticResource Primary}" FontSize="12" FontAttributes="Bold" Padding="0" CommandParameter="{Binding .}" Clicked="OnMessageBuyerClicked"/>
+                                                <BoxView WidthRequest="1" Color="{StaticResource Gray200}" HeightRequest="15" VerticalOptions="Center" />
+                                                <Button Text="Refund &amp; Relist" BackgroundColor="Transparent" TextColor="#DC3545" FontSize="12" FontAttributes="Bold" Padding="0" CommandParameter="{Binding .}" Clicked="OnCancelReservedClicked"/>
+                                            </HorizontalStackLayout>
+                                        </VerticalStackLayout>
+
+                                        <VerticalStackLayout Spacing="12" IsVisible="{Binding IsSold}">
+                                            <Border BackgroundColor="#D1E7DD" StrokeThickness="0" StrokeShape="RoundRectangle 12" Padding="15,10">
+                                                <Label Text="Item Successfully Handed Over." FontSize="12" FontAttributes="Bold" TextColor="#0F5132" HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
+                                            </Border>
+                                            <Button Text="Message Buyer" BackgroundColor="Transparent" TextColor="{StaticResource Primary}" FontSize="12" FontAttributes="Bold" Padding="0" CommandParameter="{Binding .}" Clicked="OnMessageBuyerClicked"/>
+                                        </VerticalStackLayout>
+
+                                    </VerticalStackLayout>
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </RefreshView>
+
+            <VerticalStackLayout x:Name="EmptyView" IsVisible="False" VerticalOptions="Center" HorizontalOptions="Center" Spacing="20" Padding="40">
+                <Image Source="empty_inventory.png" HeightRequest="100" WidthRequest="100" Opacity="0.3"/>
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Inventory Empty" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource Gray900}" HorizontalOptions="Center"/>
+                    <Label Text="You don't have any active items." FontSize="13" TextColor="{StaticResource Gray500}" HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+                <Button Text="Create New Listing" BackgroundColor="{StaticResource Primary}" TextColor="White" FontAttributes="Bold" CornerRadius="12" HeightRequest="50" WidthRequest="200" Clicked="OnCreateListingClicked" Margin="0,10,0,0"/>
+            </VerticalStackLayout>
+        </Grid>
+
+        <Grid x:Name="CustomAlertBox" Grid.RowSpan="3" ZIndex="200" VerticalOptions="Start" HorizontalOptions="Center" Margin="0,20,0,0" TranslationY="-150">
+            <Border x:Name="AlertBorder" StrokeThickness="0" StrokeShape="RoundRectangle 12" BackgroundColor="#198754" Padding="20,15" WidthRequest="340">
+                <Border.Shadow>
+                    <Shadow Brush="Black" Offset="0,4" Radius="12" Opacity="0.15" />
+                </Border.Shadow>
+                <HorizontalStackLayout Spacing="15">
+                    <Label x:Name="AlertIcon" Text="✓" FontSize="20" FontAttributes="Bold" TextColor="White" VerticalOptions="Center"/>
+                    <VerticalStackLayout VerticalOptions="Center" Spacing="2">
+                        <Label x:Name="AlertTitle" Text="Success" FontSize="14" FontAttributes="Bold" TextColor="White"/>
+                        <Label x:Name="AlertMessage" Text="System state localized successfully." FontSize="12" TextColor="White" Opacity="0.9"/>
+                    </VerticalStackLayout>
+                </HorizontalStackLayout>
+            </Border>
+        </Grid>
+    </Grid>
+</ContentPage>

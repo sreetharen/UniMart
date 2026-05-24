@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:views="clr-namespace:UniMart.Views"
+             x:Class="UniMart.Views.ItemDetailsPage"
+             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource OffBlack}}"
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False">
+    <Grid RowDefinitions="Auto, *, Auto">
+
+        <Grid Grid.Row="0" Padding="15,20,15,10" ColumnDefinitions="Auto, *, Auto">
+            <Border Grid.Column="0" HeightRequest="44" WidthRequest="44" StrokeShape="RoundRectangle 22" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}" Padding="0" VerticalOptions="Center">
+                <Border.Shadow>
+                    <Shadow Brush="Black" Offset="0,4" Radius="10" Opacity="0.10" />
+                </Border.Shadow>
+                <ImageButton Source="back_icon.png" Clicked="OnBackTapped" BackgroundColor="Transparent" Padding="12" VerticalOptions="Center" HorizontalOptions="Center"/>
+            </Border>
+
+            <Label Grid.Column="1" Text="Item Details" FontSize="18" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" VerticalOptions="Center" HorizontalOptions="Center"/>
+
+            <Border Grid.Column="2" HeightRequest="44" WidthRequest="44" StrokeShape="RoundRectangle 22" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray900}}" Padding="0" VerticalOptions="Center">
+                <Border.Shadow>
+                    <Shadow Brush="Black" Offset="0,4" Radius="10" Opacity="0.10" />
+                </Border.Shadow>
+                <ImageButton Source="report_icon.png" Clicked="OnReportItemClicked" BackgroundColor="Transparent" Padding="12" VerticalOptions="Center" HorizontalOptions="Center"/>
+            </Border>
+        </Grid>
+
+        <ScrollView Grid.Row="1" VerticalScrollBarVisibility="Never">
+            <VerticalStackLayout Spacing="0" Padding="0,0,0,40">
+
+                <Grid Margin="15,10,15,0">
+                    <Border StrokeThickness="0" StrokeShape="RoundRectangle 20" BackgroundColor="Transparent" IsVisible="{Binding HasImages}">
+                        <Grid HeightRequest="320" IsClippedToBounds="True">
+                            <CarouselView ItemsSource="{Binding CurrentItem.ImageUrls}" IndicatorView="imageIndicators" Loop="False">
+                                <CarouselView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Image Source="{Binding .}" Aspect="AspectFill" />
+                                    </DataTemplate>
+                                </CarouselView.ItemTemplate>
+                            </CarouselView>
+                        </Grid>
+                    </Border>
+
+                    <Border Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray800}}" StrokeThickness="1" StrokeShape="RoundRectangle 20" BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}" HeightRequest="320" IsVisible="{Binding HasNoImages}">
+                        <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="10">
+                            <Image Source="placeholder_icon.png" HeightRequest="64" WidthRequest="64" HorizontalOptions="Center"/>
+                            <Label Text="No Image Provided" FontSize="14" TextColor="{StaticResource Gray500}" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+
+                <IndicatorView x:Name="imageIndicators" IndicatorColor="#DEE2E6" SelectedIndicatorColor="{StaticResource Primary}" HorizontalOptions="Center" IndicatorsShape="Circle" IndicatorSize="6" Margin="0, 15, 0, 15" IsVisible="{Binding HasImages}" />
+
+                <VerticalStackLayout Padding="20,10,20,0" Spacing="20">
+
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="{Binding CurrentItem.Title}" FontSize="24" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" LineHeight="1.2"/>
+
+                        <Grid ColumnDefinitions="*, Auto" Margin="0,5,0,0">
+                            <HorizontalStackLayout Grid.Column="0" Spacing="4" VerticalOptions="Center">
+                                <Label Text="RM" FontSize="16" TextColor="{StaticResource Primary}" FontAttributes="Bold" VerticalOptions="End" Margin="0,0,0,4"/>
+                                <Label Text="{Binding CurrentItem.Price, StringFormat='{0:F2}'}" FontSize="32" TextColor="{StaticResource Primary}" FontAttributes="Bold"/>
+                            </HorizontalStackLayout>
+                            <Label Grid.Column="1" Text="{Binding CurrentItem.TimeAgo}" FontSize="12" FontAttributes="Italic" TextColor="{StaticResource Gray500}" VerticalOptions="Center"/>
+                        </Grid>
+                    </VerticalStackLayout>
+
+                    <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray800}}" />
+
+                    <Grid ColumnDefinitions="85, *" RowDefinitions="Auto, Auto, Auto" RowSpacing="15">
+                        <Label Grid.Row="0" Grid.Column="0" Text="Category:" FontSize="14" TextColor="{StaticResource Gray500}" VerticalOptions="Center"/>
+                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding CurrentItem.Category}" FontSize="14" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" VerticalOptions="Center" LineBreakMode="WordWrap"/>
+
+                        <Label Grid.Row="1" Grid.Column="0" Text="Condition:" FontSize="14" TextColor="{StaticResource Gray500}" VerticalOptions="Start"/>
+                        <Label Grid.Row="1" Grid.Column="1" Text="{Binding CurrentItem.Condition}" FontSize="14" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" VerticalOptions="Start" LineBreakMode="WordWrap"/>
+
+                        <Label Grid.Row="2" Grid.Column="0" Text="Status:" FontSize="14" TextColor="{StaticResource Gray500}" VerticalOptions="Center"/>
+                        <Label Grid.Row="2" Grid.Column="1" Text="{Binding StatusText}" TextColor="{Binding StatusColor}" FontSize="14" FontAttributes="Bold" VerticalOptions="Center"/>
+                    </Grid>
+
+                    <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray800}}" />
+
+                    <Grid ColumnDefinitions="Auto, *" RowDefinitions="Auto, Auto" ColumnSpacing="12" RowSpacing="2" HorizontalOptions="Fill">
+                        <Frame Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" WidthRequest="48" HeightRequest="48" CornerRadius="24" BackgroundColor="{StaticResource Primary}" Padding="0" HasShadow="False" VerticalOptions="Center">
+                            <Label Text="{Binding SellerInitial}" TextColor="White" FontSize="20" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
+                        </Frame>
+
+                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding SellerName}" FontSize="15" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" VerticalOptions="End"/>
+
+                        <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="Auto, *" ColumnSpacing="6" HorizontalOptions="Fill" VerticalOptions="Start">
+                            <Ellipse Grid.Column="0" WidthRequest="8" HeightRequest="8" Fill="#28A745" VerticalOptions="Center" Margin="0,3,0,0"/>
+                            <Label Grid.Column="1" Text="{Binding SellerMajor}" FontSize="12" TextColor="{StaticResource Gray500}" LineBreakMode="WordWrap" HorizontalOptions="Fill"/>
+                        </Grid>
+                    </Grid>
+
+                    <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray800}}" />
+
+                    <VerticalStackLayout x:Name="DescriptionSection" Spacing="10">
+                        <Label Text="Product Description" FontSize="16" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                        <Label Text="{Binding CurrentItem.Description}" FontSize="15" TextColor="{StaticResource Gray500}" LineHeight="1.5"/>
+                    </VerticalStackLayout>
+
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Border Grid.Row="2" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}" StrokeThickness="1" Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray800}}" Padding="15,15,15,25">
+            <Grid ZIndex="10">
+                <Grid ColumnDefinitions="*, 2*" ColumnSpacing="12" IsVisible="{Binding IsBuyer}">
+                    <Button Grid.Column="0" Text="Chat" FontAttributes="Bold" TextColor="{StaticResource Primary}" BackgroundColor="Transparent" BorderColor="{StaticResource Primary}" BorderWidth="2" CornerRadius="12" HeightRequest="55" Clicked="OnAskSellerClicked"/>
+                    <Button Grid.Column="1" Text="{Binding MainButtonText}" IsEnabled="{Binding IsMainButtonEnabled}" BackgroundColor="{Binding MainButtonBgColor}" FontAttributes="Bold" TextColor="{StaticResource White}" CornerRadius="12" HeightRequest="55" Clicked="OnBuyClicked"/>
+                </Grid>
+
+                <Grid ColumnDefinitions="*" IsVisible="{Binding IsOwner}">
+                    <Button Text="You Listed This Item" IsEnabled="False" FontAttributes="Bold" TextColor="{StaticResource White}" BackgroundColor="{StaticResource Gray500}" CornerRadius="12" HeightRequest="55"/>
+                </Grid>
+            </Grid>
+        </Border>
+
+        <Grid x:Name="StatusOverlay" Grid.RowSpan="3" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}" IsVisible="False" ZIndex="100">
+
+            <VerticalStackLayout x:Name="ProcessingStateContainer" HorizontalOptions="Center" VerticalOptions="Center" Spacing="20" IsVisible="True">
+                <ActivityIndicator IsRunning="True" Color="{StaticResource Primary}" HeightRequest="60" WidthRequest="60" HorizontalOptions="Center"/>
+                <Label Text="Securing Funds in Escrow..." TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" FontSize="20" FontAttributes="Bold" HorizontalOptions="Center"/>
+                <Label Text="Please do not close the app." TextColor="{StaticResource Gray500}" FontSize="14" HorizontalOptions="Center"/>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout x:Name="SuccessStateContainer" HorizontalOptions="Center" VerticalOptions="Center" Spacing="20" IsVisible="False" Padding="20">
+                <Frame WidthRequest="90" HeightRequest="90" CornerRadius="45" BackgroundColor="#198754" Padding="0" HorizontalOptions="Center" HasShadow="False">
+                    <Label Text="✓" FontSize="45" TextColor="White" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
+                </Frame>
+
+                <Label Text="Reservation Locked!" FontSize="24" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" HorizontalOptions="Center" Margin="0,10,0,0"/>
+                <Label Text="Your funds are securely held in escrow." FontSize="15" TextColor="{StaticResource Gray500}" HorizontalOptions="Center" Margin="0,0,0,20"/>
+
+                <Button Text="View Handover QR" BackgroundColor="{StaticResource Primary}" TextColor="White" FontAttributes="Bold" CornerRadius="12" HeightRequest="55" WidthRequest="260" Clicked="OnViewQRClicked"/>
+                <Button Text="Back to Home" BackgroundColor="Transparent" TextColor="{StaticResource Primary}" BorderColor="{StaticResource Primary}" BorderWidth="2" FontAttributes="Bold" CornerRadius="12" HeightRequest="55" WidthRequest="260" Clicked="OnBackToHomeClicked"/>
+            </VerticalStackLayout>
+
+        </Grid>
+
+    </Grid>
+</ContentPage>

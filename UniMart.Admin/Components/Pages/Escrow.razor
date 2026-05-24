@@ -1,0 +1,129 @@
+﻿@page "/escrow"
+@using Google.Cloud.Firestore
+@implements IDisposable
+@inject FirestoreDb db
+
+<PageTitle>Live Escrow Ledger</PageTitle>
+
+<div class="escrow-workspace container mt-4 mb-5">
+    <div class="mb-4">
+        <h2 class="console-title">Escrow Ledger</h2>
+        <p class="console-subtitle">Monitoring active platform trade holds and capital currently protected in escrow.</p>
+    </div>
+
+    <div class="card shadow-sm custom-panel-card">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 custom-escrow-table">
+                <thead>
+                    <tr class="table-header-row">
+                        <th class="ps-4 py-3">Reserved Asset</th>
+                        <th class="py-3">Seller</th>
+                        <th class="py-3">Buyer</th>
+                        <th class="py-3">Locked Capital</th>
+                        <th class="text-end pe-4 py-3">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (IsLoading)
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center py-5">
+                                <div class="spinner-border spinner-border-sm text-primary"></div>
+                                <span class="text-muted ms-2 small font-monospace">Auditing Cloud Escrow Holds...</span>
+                            </td>
+                        </tr>
+                    }
+                    else if (!ReservedItems.Any())
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-5 small font-monospace">No client assets currently restricted within active meetup holds.</td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in ReservedItems)
+                        {
+                            <tr class="table-data-row">
+                                <td class="ps-4">
+                                    <div class="d-flex flex-column">
+                                        <span class="row-important-text">@item.Title</span>
+                                        <span class="row-muted-hash">ID: @FormatId(item.Id)</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <span class="row-important-text">@item.SellerName</span>
+                                        <span class="badge bg-light text-muted border font-monospace py-1 px-2 mt-1 alignment-badge">@item.SellerEmail</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <span class="row-important-text">@item.BuyerName</span>
+                                        <span class="badge bg-light text-muted border font-monospace py-1 px-2 mt-1 alignment-badge">@item.BuyerEmail</span>
+                                    </div>
+                                </td>
+                                <td class="row-financial-text">RM @item.Price.ToString("N2")</td>
+                                <td class="text-end pe-4">
+                                    <span class="badge status-pill bg-warning-subtle text-warning-dark">Reserved Hold</span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<EscrowItem> ReservedItems = new();
+    private bool IsLoading = true;
+    private FirestoreChangeListener _escrowListener;
+
+    protected override void OnInitialized()
+    {
+        // Now only listening for 'Reserved' items as disputes are removed
+        _escrowListener = db.Collection("listings")
+            .WhereEqualTo("status", "Reserved")
+            .Listen(async snapshot =>
+            {
+                var tempItems = new List<EscrowItem>();
+                foreach (var doc in snapshot.Documents)
+                {
+                    tempItems.Add(new EscrowItem
+                    {
+                        Id = doc.Id,
+                        Title = doc.GetValue<string>("title"),
+                        Price = Convert.ToDouble(doc.GetValue<object>("price")),
+                        SellerId = doc.GetValue<string>("sellerId"),
+                        BuyerId = doc.GetValue<string>("soldToBuyerId")
+                    });
+                }
+
+                // Resolve identities
+                foreach (var item in tempItems)
+                {
+                    var seller = await db.Collection("users").Document(item.SellerId).GetSnapshotAsync();
+                    item.SellerName = seller.GetValue<string>("name");
+                    item.SellerEmail = seller.GetValue<string>("email");
+
+                    var buyer = await db.Collection("users").Document(item.BuyerId).GetSnapshotAsync();
+                    item.BuyerName = buyer.GetValue<string>("name");
+                    item.BuyerEmail = buyer.GetValue<string>("email");
+                }
+
+                ReservedItems = tempItems;
+                IsLoading = false;
+                await InvokeAsync(StateHasChanged);
+            });
+    }
+
+    private string FormatId(string id) => id.Length > 8 ? $"{id.Substring(0, 4)}...{id.Substring(id.Length - 4)}" : id;
+    public void Dispose() => _escrowListener?.StopAsync();
+
+    public class EscrowItem
+    {
+        public string Id, Title, SellerId, BuyerId, SellerName, SellerEmail, BuyerName, BuyerEmail;
+        public double Price;
+    }
+}

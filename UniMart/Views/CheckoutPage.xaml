@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="UniMart.Views.CheckoutPage"
+             BackgroundColor="#FFFFFF"
+             Shell.NavBarIsVisible="False">
+
+    <Grid>
+        <Grid RowDefinitions="Auto, *">
+            <Border Grid.Row="0" BackgroundColor="White" StrokeThickness="0" Padding="20,15,20,15">
+                <Border.Shadow>
+                    <Shadow Brush="Black" Offset="0,2" Radius="10" Opacity="0.03" />
+                </Border.Shadow>
+                <Grid>
+                    <Button HorizontalOptions="Start" Text="✕" BackgroundColor="Transparent" TextColor="#1A1A1A" FontSize="20" WidthRequest="40" HeightRequest="40" Clicked="OnBackClicked" VerticalOptions="Center" Padding="0"/>
+                    <Label Text="Secure Checkout" FontSize="18" FontAttributes="Bold" TextColor="#1A1A1A" HorizontalOptions="Center" VerticalOptions="Center"/>
+                </Grid>
+            </Border>
+
+            <ScrollView x:Name="FormScrollView" Grid.Row="1" VerticalScrollBarVisibility="Never">
+                <VerticalStackLayout Padding="20" Spacing="25">
+
+                    <Border StrokeThickness="0" StrokeShape="RoundRectangle 20" HeightRequest="210" Padding="0" Margin="0,10">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#0056B3" Offset="0.1" />
+                                <GradientStop Color="#007BFF" Offset="1.0" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Border.Shadow>
+                            <Shadow Brush="#0056B3" Offset="0,10" Radius="20" Opacity="0.3" />
+                        </Border.Shadow>
+
+                        <Grid Padding="25" RowDefinitions="Auto, *, Auto">
+                            <Label Text="Total Amount to Fund" TextColor="#B0D4FF" FontSize="13" FontAttributes="Bold" CharacterSpacing="1"/>
+
+                            <HorizontalStackLayout Grid.Row="1" VerticalOptions="Center" Spacing="8">
+                                <Label Text="RM" TextColor="White" FontSize="22" FontAttributes="Bold" VerticalOptions="Center" Margin="0,8,0,0"/>
+                                <Label x:Name="AmountLabel" Text="0.00" TextColor="White" FontSize="46" FontAttributes="Bold"/>
+                            </HorizontalStackLayout>
+
+                            <Grid Grid.Row="2" ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto">
+                                <Label x:Name="VisualCardNumberLabel" Grid.Row="0" Grid.ColumnSpan="2" Text="4242 42XX XXXX 4242" TextColor="White" FontSize="15" FontAttributes="Bold" CharacterSpacing="2"/>
+                                <Label x:Name="VisualCardExpiryLabel" Grid.Row="1" Grid.Column="0" Text="MM/YY" TextColor="#B0D4FF" FontSize="12" Margin="0,5,0,0"/>
+                                <Label x:Name="VisualCardCvcLabel" Grid.Row="1" Grid.Column="1" Text="XXX" TextColor="#B0D4FF" FontSize="12" Margin="0,5,0,0"/>
+                            </Grid>
+                        </Grid>
+                    </Border>
+
+                    <VerticalStackLayout Spacing="15">
+                        <Label Text="Payment Details" FontSize="16" FontAttributes="Bold" TextColor="#1A1A1A"/>
+
+                        <Border Stroke="#F1F3F5" StrokeThickness="2" StrokeShape="RoundRectangle 16" BackgroundColor="#F8F9FA" Padding="20,10">
+                            <VerticalStackLayout Spacing="15">
+
+                                <VerticalStackLayout Spacing="5">
+                                    <Label Text="Card Number" FontSize="12" FontAttributes="Bold" TextColor="#6C757D"/>
+                                    <Entry x:Name="CardNumberEntry" 
+                                           Placeholder="4242 4242 4242 4242" 
+                                           Keyboard="Telephone" 
+                                           MaxLength="19" 
+                                           TextColor="#1A1A1A" 
+                                           FontSize="18"
+                                           TextChanged="OnCardNumberChanged"
+                                           Focused="OnInputFocused" Unfocused="OnInputUnfocused"/>
+                                </VerticalStackLayout>
+
+                                <BoxView HeightRequest="1" Color="#E9ECEF"/>
+
+                                <Grid ColumnDefinitions="*, Auto, *" ColumnSpacing="15">
+                                    <VerticalStackLayout Grid.Column="0" Spacing="5">
+                                        <Label Text="Expiry" FontSize="12" FontAttributes="Bold" TextColor="#6C757D"/>
+                                        <Entry x:Name="ExpiryEntry" Placeholder="MM/YY" Keyboard="Numeric" MaxLength="5" TextColor="#1A1A1A" FontSize="18" TextChanged="OnExpiryChanged" Focused="OnInputFocused" Unfocused="OnInputUnfocused"/>
+                                    </VerticalStackLayout>
+
+                                    <BoxView Grid.Column="1" WidthRequest="1" Color="#E9ECEF"/>
+
+                                    <VerticalStackLayout Grid.Column="2" Spacing="5">
+                                        <Label Text="CVC" FontSize="12" FontAttributes="Bold" TextColor="#6C757D"/>
+                                        <Entry x:Name="CvcEntry" Placeholder="123" Keyboard="Numeric" MaxLength="3" TextColor="#1A1A1A" FontSize="18" HorizontalTextAlignment="Center" TextChanged="OnCardCvcChanged" Focused="OnInputFocused" Unfocused="OnInputUnfocused"/>
+                                    </VerticalStackLayout>
+                                </Grid>
+
+                            </VerticalStackLayout>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <Button x:Name="PayButton" Text="Authenticate &amp; Pay" FontAttributes="Bold" FontSize="16" TextColor="White" BackgroundColor="#1A1A1A" CornerRadius="16" HeightRequest="60" Clicked="OnPayClicked" Margin="0,10,0,0" />
+
+                    <ContentView x:Name="KeyboardSpacer" HeightRequest="0" />
+
+                </VerticalStackLayout>
+            </ScrollView>
+        </Grid>
+
+        <Grid x:Name="LoadingOverlay" IsVisible="False" BackgroundColor="#CCFFFFFF" ZIndex="100">
+            <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="20">
+                <ActivityIndicator IsRunning="True" Color="#0056B3" HeightRequest="50" WidthRequest="50"/>
+                <Label x:Name="LoadingStatusLabel" Text="Processing secure payment..." FontSize="16" FontAttributes="Bold" TextColor="#1A1A1A" HorizontalOptions="Center"/>
+            </VerticalStackLayout>
+        </Grid>
+
+        <Grid x:Name="CustomAlertBox" ZIndex="200" VerticalOptions="Start" HorizontalOptions="Center" Margin="0,20,0,0" TranslationY="-150">
+            <Border x:Name="AlertBorder" StrokeThickness="0" StrokeShape="RoundRectangle 12" BackgroundColor="#198754" Padding="20,15" WidthRequest="340">
+                <Border.Shadow>
+                    <Shadow Brush="Black" Offset="0,4" Radius="12" Opacity="0.15" />
+                </Border.Shadow>
+                <HorizontalStackLayout Spacing="15">
+                    <Label x:Name="AlertIcon" Text="✓" FontSize="20" FontAttributes="Bold" TextColor="White" VerticalOptions="Center"/>
+                    <VerticalStackLayout VerticalOptions="Center" Spacing="2">
+                        <Label x:Name="AlertTitle" Text="Success" FontSize="14" FontAttributes="Bold" TextColor="White"/>
+                        <Label x:Name="AlertMessage" Text="Your item is live!" FontSize="12" TextColor="White" Opacity="0.9"/>
+                    </VerticalStackLayout>
+                </HorizontalStackLayout>
+            </Border>
+        </Grid>
+
+    </Grid>
+</ContentPage>

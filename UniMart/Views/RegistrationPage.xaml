@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="UniMart.Views.RegistrationPage"
+             BackgroundColor="#F4F6F8"
+             Shell.NavBarIsVisible="False">
+
+    <Grid>
+        <!-- The Curved Blue Header Background -->
+        <Border BackgroundColor="#0056B3" HeightRequest="220" VerticalOptions="Start" StrokeThickness="0">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="0,0,40,40" />
+            </Border.StrokeShape>
+        </Border>
+
+        <!-- The Scrollable Content -->
+        <ScrollView>
+            <VerticalStackLayout Padding="20,40,20,40">
+
+                <!-- Header Typography -->
+                <VerticalStackLayout Spacing="5" Margin="0,0,0,20" HorizontalOptions="Center">
+                    <Label Text="Create Account" 
+                           FontSize="32" 
+                           FontAttributes="Bold" 
+                           TextColor="White"
+                           HorizontalOptions="Center"/>
+                    <Label Text="Join the UniMart community." 
+                           FontSize="14" 
+                           TextColor="#D0E1F9"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+
+                <!-- The Elevated Floating Card -->
+                <Border BackgroundColor="White" StrokeThickness="0" Padding="25,30" Margin="10,0">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="20" />
+                    </Border.StrokeShape>
+                    <Border.Shadow>
+                        <Shadow Brush="Black" Offset="0,15" Radius="30" Opacity="0.08" />
+                    </Border.Shadow>
+
+                    <VerticalStackLayout Spacing="18">
+
+                        <!-- Name Input Group -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Full Name" FontSize="13" FontAttributes="Bold" TextColor="#495057"/>
+                            <Border Stroke="#E9ECEF" StrokeThickness="1.5" StrokeShape="RoundRectangle 10" BackgroundColor="#FAFAFA" Padding="15,2">
+                                <Entry x:Name="NameEntry" Placeholder="Enter your full name" TextColor="#1A1A1A" ClearButtonVisibility="WhileEditing"/>
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Email Input Group -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Student Email" FontSize="13" FontAttributes="Bold" TextColor="#495057"/>
+                            <Border Stroke="#E9ECEF" StrokeThickness="1.5" StrokeShape="RoundRectangle 10" BackgroundColor="#FAFAFA" Padding="15,2">
+                                <Entry x:Name="EmailEntry" Placeholder="@student.uniten.edu.my" Keyboard="Email" TextColor="#1A1A1A" ClearButtonVisibility="WhileEditing"/>
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Password Input Group -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Password" FontSize="13" FontAttributes="Bold" TextColor="#495057"/>
+                            <Border Stroke="#E9ECEF" StrokeThickness="1.5" StrokeShape="RoundRectangle 10" BackgroundColor="#FAFAFA" Padding="15,2">
+                                <Entry x:Name="PasswordEntry" Placeholder="Min 6 characters" IsPassword="True" TextColor="#1A1A1A" ClearButtonVisibility="WhileEditing"/>
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Confirm Password Input Group -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Confirm Password" FontSize="13" FontAttributes="Bold" TextColor="#495057"/>
+                            <Border Stroke="#E9ECEF" StrokeThickness="1.5" StrokeShape="RoundRectangle 10" BackgroundColor="#FAFAFA" Padding="15,2">
+                                <Entry x:Name="ConfirmPasswordEntry" Placeholder="Repeat password" IsPassword="True" TextColor="#1A1A1A" ClearButtonVisibility="WhileEditing"/>
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Terms Checkbox -->
+                        <HorizontalStackLayout Spacing="10" Margin="0,5,0,0">
+                            <CheckBox x:Name="TermsCheckBox" Color="#0056B3" />
+                            <Label Text="I agree to the Terms &amp; Campus Safety Guidelines" 
+                                   TextColor="#6C757D" 
+                                   FontSize="13" 
+                                   VerticalOptions="Center" 
+                                   LineBreakMode="WordWrap" 
+                                   WidthRequest="230"/>
+                        </HorizontalStackLayout>
+
+                        <Label x:Name="ErrorLabel" TextColor="#DC3545" FontSize="13" IsVisible="False" HorizontalOptions="Center"/>
+
+                        <!-- Action Button -->
+                        <Button x:Name="SignUpButton"
+                                Text="Create Account" 
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                TextColor="White"
+                                BackgroundColor="#0056B3"
+                                CornerRadius="12"
+                                HeightRequest="55"
+                                Clicked="OnSignUpClicked"
+                                Margin="0,10,0,0">
+                            <Button.Shadow>
+                                <Shadow Brush="#0056B3" Offset="0,8" Radius="15" Opacity="0.4" />
+                            </Button.Shadow>
+                        </Button>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Footer -->
+                <HorizontalStackLayout HorizontalOptions="Center" Spacing="5" Margin="0,25,0,0">
+                    <Label Text="Already have an account?" TextColor="#6C757D" FontSize="14" VerticalOptions="Center"/>
+                    <Label Text="Log In" TextColor="#0056B3" FontSize="14" FontAttributes="Bold" VerticalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnLoginTapped"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </HorizontalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

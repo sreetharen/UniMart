@@ -1,0 +1,66 @@
+﻿@using UniMart.Admin.Components
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedSessionStorage ProtectedSessionStore
+
+<Router AppAssembly="typeof(Program).Assembly" NotFoundPage="typeof(Pages.NotFound)">
+    <Found Context="routeData">
+        @if (IsAdminAuthenticated)
+        {
+            <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
+            <FocusOnNavigate RouteData="routeData" Selector="h1" />
+        }
+        else if (IsCheckingAuth)
+        {
+            <div class="d-flex justify-content-center align-items-center vh-100 bg-light">
+                <div class="spinner-border text-primary" role="status"></div>
+            </div>
+        }
+        else
+        {
+            <LoginComponent OnLoginSuccess="HandleLoginSuccess" />
+        }
+    </Found>
+</Router>
+
+@code {
+    private bool IsAdminAuthenticated = false;
+    private bool IsCheckingAuth = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                // 🔐 READ: Attempt to pull encrypted authorization parameters from browser storage
+                var result = await ProtectedSessionStore.GetAsync<bool>("AdminSessionActive");
+                if (result.Success && result.Value)
+                {
+                    IsAdminAuthenticated = true;
+                }
+            }
+            catch (Exception)
+            {
+                // Fallback for secure initialization failure bounds
+                IsAdminAuthenticated = false;
+            }
+            finally
+            {
+                IsCheckingAuth = false;
+                StateHasChanged(); // Force structural render mutation update
+            }
+        }
+    }
+
+    private async Task HandleLoginSuccess()
+    {
+        try
+        {
+            // 🔐 WRITE: Safely encrypt and store the session token state
+            await ProtectedSessionStore.SetAsync("AdminSessionActive", true);
+            IsAdminAuthenticated = true;
+            StateHasChanged();
+        }
+        catch (Exception) { }
+    }
+}

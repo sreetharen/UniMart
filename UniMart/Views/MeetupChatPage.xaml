@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="UniMart.Views.MeetupChatPage"
+             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource OffBlack}}"
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False"
+             SafeAreaEdges="All">
+
+    <Grid>
+        <Grid.GestureRecognizers>
+            <TapGestureRecognizer Tapped="OnBackgroundTapped" />
+        </Grid.GestureRecognizers>
+
+        <Grid RowDefinitions="Auto, Auto, *, Auto">
+
+            <Border Grid.Row="0" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}" StrokeThickness="0" Padding="15,10">
+                <Grid ColumnDefinitions="Auto, *">
+                    <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                        <ImageButton Source="back_icon.png" WidthRequest="20" HeightRequest="20" Padding="10" Aspect="AspectFit" Clicked="OnBackClicked" BackgroundColor="Transparent" Margin="-10,0,0,0"/>
+                        <Frame WidthRequest="36" HeightRequest="36" CornerRadius="18" BackgroundColor="{StaticResource Primary}" Padding="0" HasShadow="False" VerticalOptions="Center">
+                            <Label x:Name="PartnerInitialLabel" Text="?" TextColor="White" FontSize="16" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
+                        </Frame>
+                        <Label x:Name="PartnerNameLabel" Text="Loading..." FontSize="16" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" VerticalOptions="Center" Margin="5,0,0,0"/>
+                    </HorizontalStackLayout>
+                </Grid>
+            </Border>
+
+            <Border Grid.Row="1" BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}" Padding="15,12" StrokeThickness="0">
+                <VerticalStackLayout Spacing="10">
+                    <Grid ColumnDefinitions="45, *">
+                        <Border Grid.Column="0" HeightRequest="45" WidthRequest="45" StrokeShape="RoundRectangle 10">
+                            <Image x:Name="ItemThumbnail" Aspect="AspectFill"/>
+                        </Border>
+                        <VerticalStackLayout Grid.Column="1" Margin="12,0" VerticalOptions="Center">
+                            <Label x:Name="ItemTitleLabel" Text="Loading..." FontSize="14" FontAttributes="Bold" MaxLines="1" LineBreakMode="TailTruncation" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                            <Label x:Name="ItemPriceLabel" Text="RM 0.00" FontSize="12" TextColor="{StaticResource Primary}" FontAttributes="Bold"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                    <Label x:Name="DealStatusLabel" Text="In Progress" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource Gray500}" HorizontalOptions="Start" Margin="2,2,0,0"/>
+                    <Grid ColumnDefinitions="*, *, *" ColumnSpacing="4" HeightRequest="4">
+                        <BoxView Grid.Column="0" Color="{StaticResource Primary}" CornerRadius="2"/>
+                        <BoxView x:Name="Step2Box" Grid.Column="1" Color="{StaticResource Gray300}" CornerRadius="2"/>
+                        <BoxView x:Name="Step3Box" Grid.Column="2" Color="{StaticResource Gray300}" CornerRadius="2"/>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <CollectionView x:Name="ChatMessagesList" Grid.Row="2" Margin="15,10" ItemsUpdatingScrollMode="KeepLastItemInView">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <VerticalStackLayout Margin="0,5">
+                            <Border IsVisible="{Binding ShowDateHeader}" BackgroundColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray900}}" StrokeThickness="0" StrokeShape="RoundRectangle 12" Padding="12,4" HorizontalOptions="Center" Margin="0,10,0,15">
+                                <Label Text="{Binding DateHeaderText}" FontSize="11" FontAttributes="Bold" TextColor="{StaticResource Gray500}"/>
+                            </Border>
+
+                            <Border StrokeThickness="0" Padding="12,8,12,8" MaximumWidthRequest="280">
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsMine}" Value="True">
+                                        <Setter Property="HorizontalOptions" Value="End" />
+                                        <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+                                        <Setter Property="StrokeShape" Value="RoundRectangle 18,18,0,18" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsMine}" Value="False">
+                                        <Setter Property="HorizontalOptions" Value="Start" />
+                                        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray900}}" />
+                                        <Setter Property="StrokeShape" Value="RoundRectangle 18,18,18,0" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Border" Binding="{Binding MessageType}" Value="system">
+                                        <Setter Property="IsVisible" Value="False" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+
+                                <VerticalStackLayout Spacing="2">
+                                    <Border StrokeThickness="0" StrokeShape="RoundRectangle 12" IsVisible="{Binding HasMedia}" HeightRequest="200" WidthRequest="250" Margin="0,4,0,2">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="OnImageTapped" CommandParameter="{Binding MediaUrl}" />
+                                        </Border.GestureRecognizers>
+                                        <Grid>
+                                            <Image Source="{Binding MediaUrl}" Aspect="AspectFill"/>
+                                        </Grid>
+                                    </Border>
+
+                                    <Grid ColumnDefinitions="Auto, Auto" ColumnSpacing="8">
+                                        <Label Grid.Column="0" Text="{Binding Text}" FontSize="15" Margin="4,0,0,2" MaximumWidthRequest="210" LineBreakMode="WordWrap" VerticalOptions="Start">
+                                            <Label.Triggers>
+                                                <DataTrigger TargetType="Label" Binding="{Binding IsMine}" Value="True">
+                                                    <Setter Property="TextColor" Value="White" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Label" Binding="{Binding IsMine}" Value="False">
+                                                    <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
+                                                </DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
+                                        <HorizontalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="End" Margin="0,0,4,2">
+                                            <Label Text="{Binding FormattedMytTime}" FontSize="10" VerticalOptions="Center">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding IsMine}" Value="True">
+                                                        <Setter Property="TextColor" Value="#D1E7DD" />
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding IsMine}" Value="False">
+                                                        <Setter Property="TextColor" Value="{StaticResource Gray500}" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                            <Path IsVisible="{Binding IsMine}" Data="M18 7l-1.41-1.41-7.59 7.58-3.59-3.58-1.41 1.41 5 5 9-9z M22 7l-1.41-1.41-7.59 7.58 1.41 1.41 7.59-7.58z" Aspect="Uniform" HeightRequest="12" WidthRequest="12" VerticalOptions="Center">
+                                                <Path.Triggers>
+                                                    <DataTrigger TargetType="Path" Binding="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=IsPartnerRead}" Value="True">
+                                                        <Setter Property="Fill" Value="#4FB6EC" />
+                                                    </DataTrigger>
+                                                    <DataTrigger TargetType="Path" Binding="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=IsPartnerRead}" Value="False">
+                                                        <Setter Property="Fill" Value="#D1E7DD" />
+                                                    </DataTrigger>
+                                                </Path.Triggers>
+                                            </Path>
+                                        </HorizontalStackLayout>
+                                    </Grid>
+                                </VerticalStackLayout>
+                            </Border>
+                        </VerticalStackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Border Grid.Row="3" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}" 
+        StrokeThickness="0" Padding="15,10,15,15">
+
+                <Grid ColumnDefinitions="40, *, 40" ColumnSpacing="10" VerticalOptions="End">
+
+                    <Image Grid.Column="0" 
+               Source="gallery_icon.png" 
+               WidthRequest="24" 
+               HeightRequest="24" 
+               Aspect="AspectFit" 
+               HorizontalOptions="Center" 
+               VerticalOptions="Center">
+                        <Image.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnGalleryClicked" />
+                        </Image.GestureRecognizers>
+                    </Image>
+
+                    <Border Grid.Column="1" BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}" 
+                StrokeThickness="0" StrokeShape="RoundRectangle 22" Padding="15,0">
+                        <Editor x:Name="MessageInput" Placeholder="Type a message..." AutoSize="TextChanges" 
+                    MinimumHeightRequest="44" MaximumHeightRequest="100" 
+                    VerticalOptions="Center" 
+                    TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" 
+                    BackgroundColor="Transparent"/>
+                    </Border>
+
+                    <Image Grid.Column="2" 
+               Source="send_icon.png" 
+               WidthRequest="24" 
+               HeightRequest="24" 
+               Aspect="AspectFit" 
+               HorizontalOptions="Center" 
+               VerticalOptions="Center">
+                        <Image.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnSendTextClicked" />
+                        </Image.GestureRecognizers>
+                    </Image>
+
+                </Grid>
+            </Border>
+
+            <Grid x:Name="UploadOverlay" Grid.RowSpan="4" BackgroundColor="#CC000000" IsVisible="False" ZIndex="100">
+                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="15">
+                    <ActivityIndicator IsRunning="True" Color="{StaticResource Primary}" />
+                    <Label Text="Sending Media..." TextColor="White" FontSize="16" FontAttributes="Bold" />
+                </VerticalStackLayout>
+            </Grid>
+            <Grid x:Name="FullscreenImageOverlay" Grid.RowSpan="4" BackgroundColor="Black" IsVisible="False" ZIndex="200">
+                <Image x:Name="FullscreenImageView" Aspect="AspectFit" HorizontalOptions="Fill" VerticalOptions="Fill" />
+                <ImageButton Source="back_icon.png" WidthRequest="35" HeightRequest="35" Aspect="AspectFit" BackgroundColor="Transparent" Clicked="OnCloseFullscreenClicked" HorizontalOptions="Start" VerticalOptions="Start" Margin="15,50,0,0"/>
+            </Grid>
+
+        </Grid>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="UniMart.Views.EditListingPage"
+             BackgroundColor="{StaticResource White}"
+             Title="Update Listing"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto, *, Auto">
+        <Border Grid.Row="0" BackgroundColor="White" StrokeThickness="0" Padding="20,15">
+            <Grid ColumnDefinitions="Auto, *">
+                <ImageButton Source="back_icon.png" Clicked="OnBackClicked" HeightRequest="24" Padding="5" HorizontalOptions="Start"/>
+                <Label Grid.Column="1" Text="Edit Your Item" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" Margin="-24,0,0,0"/>
+            </Grid>
+        </Border>
+
+        <ScrollView Grid.Row="1" Padding="20">
+            <VerticalStackLayout Spacing="20">
+                <Label Text="Title" FontSize="13" FontAttributes="Bold"/>
+                <Entry x:Name="TitleEntry" MaxLength="50" Placeholder="Item Name"/>
+
+                <Label Text="Description" FontSize="13" FontAttributes="Bold"/>
+                <Editor x:Name="DescriptionEditor" HeightRequest="120" MaxLength="500"/>
+
+                <Label Text="Price (RM)" FontSize="13" FontAttributes="Bold"/>
+                <Entry x:Name="PriceEntry" Keyboard="Numeric" Placeholder="0.00"/>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Button Grid.Row="2" Text="Update Listing" BackgroundColor="{StaticResource Primary}" TextColor="White" Margin="20,10,20,30" HeightRequest="55" CornerRadius="12" Clicked="OnUpdateClicked"/>
+    </Grid>
+</ContentPage>

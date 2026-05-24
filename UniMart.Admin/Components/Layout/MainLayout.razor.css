@@ -1,0 +1,106 @@
+/* SYSTEM-UI CORNERSTONE CONTAINER CONFIGURATIONS */
+.page {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    letter-spacing: -0.1px;
+    background-color: #F8FAFC;
+}
+
+main {
+    flex: 1;
+    min-width: 0; /* CORE STRUCTURAL FIX: Stops horizontal overflow blowout when loading massive tables */
+    display: flex;
+    flex-direction: column;
+}
+
+/* SIDEBAR FRAME: Overwriting template gradients with clean, sleek enterprise slate */
+.sidebar {
+    background-color: #0F172A;
+}
+
+.top-row {
+    background-color: #FFFFFF;
+    border-bottom: 1px solid #E2E8F0;
+    justify-content: space-between;
+    height: 3.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.indicator-dot {
+    width: 6px;
+    height: 6px;
+    background-color: #10B981;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.top-row ::deep a, .top-row ::deep .btn-link {
+    white-space: nowrap;
+    margin-left: 1.5rem;
+    text-decoration: none;
+}
+
+    .top-row ::deep a:hover, .top-row ::deep .btn-link:hover {
+        text-decoration: underline;
+    }
+
+@media (max-width: 640.98px) {
+    .top-row {
+        display: none; /* Hide top header metrics inside compressed screen environments */
+    }
+}
+
+@media (min-width: 641px) {
+    .page {
+        flex-direction: row;
+        min-height: 100vh;
+    }
+
+    .sidebar {
+        width: 260px;
+        height: 100vh;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    .top-row {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        padding-left: 2rem !important;
+        padding-right: 2rem !important;
+    }
+
+    article {
+        padding-left: 2rem !important;
+        padding-right: 2rem !important;
+        max-width: 1400px;
+        width: 100%;
+        margin: 0 auto;
+    }
+}
+
+#blazor-error-ui {
+    color-scheme: light only;
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+    #blazor-error-ui .dismiss {
+        cursor: pointer;
+        position: absolute;
+        right: 0.75rem;
+        top: 0.5rem;
+    }

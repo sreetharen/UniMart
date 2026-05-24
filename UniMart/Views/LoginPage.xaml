@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="UniMart.Views.LoginPage"
+             BackgroundColor="{StaticResource White}"
+             Shell.PresentationMode="ModalAnimated"
+             Shell.NavBarIsVisible="False">
+
+    <Grid>
+        <Border BackgroundColor="{StaticResource Primary}" HeightRequest="280" VerticalOptions="Start" StrokeThickness="0">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="0,0,40,40" />
+            </Border.StrokeShape>
+        </Border>
+
+        <ScrollView>
+            <VerticalStackLayout Padding="20,40,20,40">
+
+                <VerticalStackLayout Spacing="5" Margin="0,0,0,25" HorizontalOptions="Center">
+                    <Label Text="UniMart" FontSize="42" FontAttributes="Bold" TextColor="{StaticResource White}" HorizontalOptions="Center" CharacterSpacing="2"/>
+                    <Label Text="The exclusive UNITEN campus marketplace." FontSize="14" TextColor="{StaticResource Secondary}" HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+
+                <Border BackgroundColor="{StaticResource White}" StrokeThickness="0" Padding="25,35" Margin="10,0">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="20" />
+                    </Border.StrokeShape>
+                    <Border.Shadow>
+                        <Shadow Brush="{StaticResource Black}" Offset="0,15" Radius="30" Opacity="0.08" />
+                    </Border.Shadow>
+
+                    <VerticalStackLayout Spacing="20">
+                        <Label Text="Campus Gateway" FontSize="24" FontAttributes="Bold" TextColor="{StaticResource Black}" Margin="0,0,0,10"/>
+
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="UNITEN Email" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource Gray600}"/>
+                            <Border Stroke="{StaticResource Gray200}" StrokeThickness="1.5" StrokeShape="RoundRectangle 10" BackgroundColor="{StaticResource White}" Padding="15,2">
+                                <Entry x:Name="EmailEntry" Placeholder="@student.uniten.edu.my" Keyboard="Email" TextColor="{StaticResource Black}" ClearButtonVisibility="WhileEditing"/>
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="Password" FontSize="13" FontAttributes="Bold" TextColor="{StaticResource Gray600}"/>
+                            <Border Stroke="{StaticResource Gray200}" StrokeThickness="1.5" StrokeShape="RoundRectangle 10" BackgroundColor="{StaticResource White}" Padding="15,2">
+                                <Entry x:Name="PasswordEntry" Placeholder="Enter your password" IsPassword="True" TextColor="{StaticResource Black}" ClearButtonVisibility="WhileEditing"/>
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <Label Text="Forgot Password?" TextColor="{StaticResource Primary}" FontAttributes="Bold" FontSize="13" HorizontalOptions="End" Margin="0,-5,0,5">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnForgotPasswordTapped"/>
+                            </Label.GestureRecognizers>
+                        </Label>
+
+                        <Label x:Name="ErrorLabel" TextColor="{StaticResource Error}" FontSize="13" IsVisible="False" HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
+
+                        <ActivityIndicator x:Name="LoginSpinner" IsRunning="False" IsVisible="False" Color="{StaticResource Primary}" HorizontalOptions="Center" HeightRequest="30" WidthRequest="30" Margin="0,10,0,0"/>
+
+                        <Button x:Name="LoginButton"
+                                Text="Secure Login" 
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                TextColor="{StaticResource White}"
+                                BackgroundColor="{StaticResource Primary}"
+                                CornerRadius="12"
+                                HeightRequest="55"
+                                Clicked="OnLoginClicked"
+                                Margin="0,10,0,0">
+                            <Button.Shadow>
+                                <Shadow Brush="{StaticResource Primary}" Offset="0,8" Radius="15" Opacity="0.4" />
+                            </Button.Shadow>
+                        </Button>
+                    </VerticalStackLayout>
+                </Border>
+
+                <HorizontalStackLayout HorizontalOptions="Center" Spacing="15" Margin="0,30,0,0">
+                    <Button Text="Demo Buyer" FontSize="12" FontAttributes="Bold" BackgroundColor="Transparent" TextColor="{StaticResource Primary}" BorderColor="{StaticResource Primary}" BorderWidth="1.5" CornerRadius="8" HeightRequest="35" Padding="15,0" Clicked="OnDemoBuyerClicked" />
+                    <Button Text="Demo Seller" FontSize="12" FontAttributes="Bold" BackgroundColor="Transparent" TextColor="{StaticResource Primary}" BorderColor="{StaticResource Primary}" BorderWidth="1.5" CornerRadius="8" HeightRequest="35" Padding="15,0" Clicked="OnDemoSellerClicked" />
+                </HorizontalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

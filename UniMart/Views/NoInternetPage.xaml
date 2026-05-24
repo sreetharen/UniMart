@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="UniMart.Views.NoInternetPage"
+             BackgroundColor="{StaticResource Gray100}">
+
+    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="25" Padding="30">
+
+        <Image Source="no_wifi_icon.png" 
+               HeightRequest="120" 
+               WidthRequest="120" 
+               HorizontalOptions="Center" 
+               Margin="0,20,0,20" />
+
+        <Label Text="Connection Lost" 
+               FontSize="24" 
+               FontAttributes="Bold" 
+               TextColor="{StaticResource Black}" 
+               HorizontalOptions="Center"/>
+
+        <Label Text="UniMart requires an active internet connection to secure your marketplace. Waiting for signal..."
+               FontSize="15" 
+               TextColor="{StaticResource Gray600}" 
+               HorizontalTextAlignment="Center" 
+               LineHeight="1.4" />
+
+        <ActivityIndicator IsRunning="True" Color="{StaticResource Primary}" Margin="0,15,0,0" />
+
+    </VerticalStackLayout>
+</ContentPage>

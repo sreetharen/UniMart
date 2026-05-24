@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="UniMart.Views.WithdrawPage"
+             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource OffBlack}}"
+             Shell.NavBarIsVisible="False">
+
+    <Grid>
+        <Grid RowDefinitions="Auto, *">
+            <Border Grid.Row="0" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}" StrokeThickness="0" Padding="20,15,20,15" ZIndex="10">
+                <Border.Shadow>
+                    <Shadow Brush="Black" Offset="0,2" Radius="10" Opacity="0.03" />
+                </Border.Shadow>
+                <Grid ColumnDefinitions="Auto, *">
+                    <ImageButton Grid.Column="0" Source="back_icon.png" WidthRequest="24" HeightRequest="24" Clicked="OnBackClicked" VerticalOptions="Center"/>
+                    <Label Grid.Column="1" Text="Withdraw Funds" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" HorizontalOptions="Center" Margin="-24,0,0,0"/>
+                </Grid>
+            </Border>
+
+            <ScrollView x:Name="FormScrollView" Grid.Row="1" VerticalScrollBarVisibility="Never">
+                <VerticalStackLayout Padding="20" Spacing="25">
+
+                    <Border BackgroundColor="#E2E8F0" StrokeThickness="0" StrokeShape="RoundRectangle 12" Padding="20,15">
+                        <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                            <Label Text="Available to Withdraw:" FontSize="14" TextColor="#475569" VerticalOptions="Center"/>
+                            <Label x:Name="AvailableBalanceLabel" Text="RM 0.00" FontSize="18" FontAttributes="Bold" TextColor="#0F172A" VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+                    </Border>
+
+                    <Border Stroke="#0D6EFD" StrokeThickness="1" StrokeShape="RoundRectangle 8" BackgroundColor="#CFE2FF" Padding="15">
+                        <HorizontalStackLayout Spacing="10">
+                            <Label Text="ℹ️" FontSize="20" VerticalOptions="Center"/>
+                            <Label Text="For security and compliance (AML/KYC), all outbound transfers are manually reviewed by UniMart Admins. Processing takes 2-3 business days." FontSize="12" TextColor="#084298" VerticalOptions="Center" VerticalTextAlignment="Center" WidthRequest="280"/>
+                        </HorizontalStackLayout>
+                    </Border>
+
+                    <VerticalStackLayout Spacing="15">
+                        <Label Text="Transfer Details" FontSize="16" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+
+                        <Border Stroke="{StaticResource Gray200}" StrokeThickness="1.5" StrokeShape="RoundRectangle 12" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}" Padding="15">
+                            <VerticalStackLayout Spacing="15">
+
+                                <VerticalStackLayout Spacing="5">
+                                    <Label Text="Amount to Withdraw (RM)" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource Gray500}"/>
+                                    <Entry x:Name="AmountEntry" Placeholder="0.00" Keyboard="Numeric" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" Focused="OnInputFocused" Unfocused="OnInputUnfocused"/>
+                                </VerticalStackLayout>
+
+                                <BoxView HeightRequest="1" Color="{StaticResource Gray200}"/>
+
+                                <VerticalStackLayout Spacing="5">
+                                    <Label Text="Select Bank" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource Gray500}"/>
+                                    <Picker x:Name="BankPicker" Title="Choose your bank" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" Focused="OnInputFocused" Unfocused="OnInputUnfocused">
+                                        <Picker.ItemsSource>
+                                            <x:Array Type="{x:Type x:String}">
+                                                <x:String>Maybank</x:String>
+                                                <x:String>CIMB Bank</x:String>
+                                                <x:String>Public Bank</x:String>
+                                                <x:String>RHB Bank</x:String>
+                                                <x:String>Hong Leong Bank</x:String>
+                                                <x:String>AmBank</x:String>
+                                                <x:String>Bank Islam</x:String>
+                                            </x:Array>
+                                        </Picker.ItemsSource>
+                                    </Picker>
+                                </VerticalStackLayout>
+
+                                <BoxView HeightRequest="1" Color="{StaticResource Gray200}"/>
+
+                                <VerticalStackLayout Spacing="5">
+                                    <Label Text="Account Number" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource Gray500}"/>
+                                    <Entry x:Name="AccountNumberEntry" Placeholder="e.g. 162234567890" Keyboard="Numeric" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" Focused="OnInputFocused" Unfocused="OnInputUnfocused"/>
+                                </VerticalStackLayout>
+
+                                <BoxView HeightRequest="1" Color="{StaticResource Gray200}"/>
+
+                                <VerticalStackLayout Spacing="5">
+                                    <Label Text="Account Holder Name" FontSize="12" FontAttributes="Bold" TextColor="{StaticResource Gray500}"/>
+                                    <Entry x:Name="AccountNameEntry" Placeholder="As per bank IC" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" Focused="OnInputFocused" Unfocused="OnInputUnfocused"/>
+                                </VerticalStackLayout>
+
+                            </VerticalStackLayout>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <Button x:Name="SubmitButton" Text="Request Transfer" FontAttributes="Bold" FontSize="16" TextColor="White" BackgroundColor="{StaticResource Primary}" CornerRadius="12" HeightRequest="55" Clicked="OnSubmitClicked" Margin="0,10,0,20">
+                        <Button.Shadow>
+                            <Shadow Brush="{StaticResource Primary}" Offset="0,4" Radius="10" Opacity="0.3" />
+                        </Button.Shadow>
+                    </Button>
+
+                    <ContentView x:Name="KeyboardSpacer" HeightRequest="0" />
+
+                </VerticalStackLayout>
+            </ScrollView>
+        </Grid>
+
+        <Grid x:Name="LoadingOverlay" IsVisible="False" BackgroundColor="#CCFFFFFF" ZIndex="100">
+            <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="20">
+                <ActivityIndicator IsRunning="True" Color="#0056B3" HeightRequest="50" WidthRequest="50"/>
+                <Label x:Name="LoadingStatusLabel" Text="Processing request..." FontSize="16" FontAttributes="Bold" TextColor="#1A1A1A" HorizontalOptions="Center"/>
+            </VerticalStackLayout>
+        </Grid>
+
+        <Grid x:Name="CustomAlertBox" ZIndex="200" VerticalOptions="Start" HorizontalOptions="Center" Margin="0,20,0,0" TranslationY="-150">
+            <Border x:Name="AlertBorder" StrokeThickness="0" StrokeShape="RoundRectangle 12" BackgroundColor="#198754" Padding="20,15" WidthRequest="340">
+                <Border.Shadow>
+                    <Shadow Brush="Black" Offset="0,4" Radius="12" Opacity="0.15" />
+                </Border.Shadow>
+                <HorizontalStackLayout Spacing="15">
+                    <Label x:Name="AlertIcon" Text="✓" FontSize="20" FontAttributes="Bold" TextColor="White" VerticalOptions="Center"/>
+                    <VerticalStackLayout VerticalOptions="Center" Spacing="2">
+                        <Label x:Name="AlertTitle" Text="Success" FontSize="14" FontAttributes="Bold" TextColor="White"/>
+                        <Label x:Name="AlertMessage" Text="Your item is live!" FontSize="12" TextColor="White" Opacity="0.9"/>
+                    </VerticalStackLayout>
+                </HorizontalStackLayout>
+            </Border>
+        </Grid>
+
+    </Grid>
+</ContentPage>

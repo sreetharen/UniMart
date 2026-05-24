@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+    <g transform="translate(256, 220)">
+        <!-- Outer Hexagon / Isometric Box -->
+        <path d="M 0 -90 L 78 -45 L 78 45 L 0 90 L -78 45 L -78 -45 Z" fill="none" stroke="#FFFFFF" stroke-width="18" stroke-linejoin="round"/>
+        <!-- Inner Y-Axis to create 3D effect -->
+        <path d="M 0 0 L 78 -45 M 0 0 L -78 -45 M 0 0 L 0 90" fill="none" stroke="#FFFFFF" stroke-width="18" stroke-linejoin="round" stroke-linecap="round"/>
+        <!-- Floating Digital Accent Nodes -->
+        <circle cx="0" cy="-90" r="12" fill="#00E5FF"/>
+        <circle cx="-78" cy="45" r="9" fill="#00E5FF"/>
+
+        <!-- Typography -->
+        <text x="0" y="190" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="48" font-weight="900" fill="#FFFFFF" text-anchor="middle" letter-spacing="6">UNIMART</text>
+    </g>
+</svg>

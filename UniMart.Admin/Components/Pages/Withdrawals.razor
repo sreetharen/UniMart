@@ -1,0 +1,176 @@
+﻿@page "/withdrawals"
+@using Google.Cloud.Firestore
+@implements IDisposable
+@inject FirestoreDb db
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Payout Manager</PageTitle>
+
+<div class="container mt-4 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bolder text-dark mb-1">Financial Operations</h2>
+            <p class="text-muted mb-0">Centralized Ledger Management</p>
+        </div>
+    </div>
+
+    <ul class="nav nav-tabs mb-4">
+        <li class="nav-item">
+            <button class="nav-link @(ActiveTab == "Pending" ? "active" : "")" @onclick='() => ActiveTab = "Pending"'>
+                Pending Requests <span class="badge bg-danger">@PendingWithdrawals.Count</span>
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link @(ActiveTab == "History" ? "active" : "")" @onclick='() => ActiveTab = "History"'>
+                Payout History
+            </button>
+        </li>
+    </ul>
+
+    <div class="card shadow-sm custom-table-card">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 custom-admin-table">
+                <thead>
+                    <tr class="table-header-row">
+                        <th class="ps-4">Date</th>
+                        <th>Student</th>
+                        <th>Amount</th>
+                        <th>Status/Details</th>
+                        @if (ActiveTab == "Pending")
+                        {
+                            <th class="text-end pe-4">Actions</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (IsLoading)
+                    {
+                        <tr><td colspan="6" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>
+                    }
+                    else
+                    {
+                        var list = (ActiveTab == "Pending") ? PendingWithdrawals : CompletedWithdrawals;
+                        @foreach (var request in list)
+                        {
+                            <tr class="table-data-row">
+                                <td class="ps-4 font-monospace small">@request.Date.ToString("dd MMM, hh:mm tt")</td>
+                                <td><strong>@request.StudentName</strong><br /><small class="text-muted">@request.StudentEmail</small></td>
+                                <td><strong class="fs-6">RM @request.Amount.ToString("N2")</strong></td>
+                                <td>@CleanBankName(request.BankDetails)</td>
+                                @if (ActiveTab == "Pending")
+                                {
+                                    <td class="text-end pe-4">
+                                        <button class="btn btn-success btn-sm" @onclick="() => ApproveRequest(request)">Approve</button>
+                                        <button class="btn btn-outline-danger btn-sm" @onclick="() => RejectRequest(request)">Reject</button>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string ActiveTab = "Pending";
+    private List<WithdrawalRequest> PendingWithdrawals = new();
+    private List<WithdrawalRequest> CompletedWithdrawals = new();
+    private bool IsLoading = true;
+    private FirestoreChangeListener _transactionsListener; // Fixed listener name
+
+    protected override void OnInitialized() => StartListeners();
+
+    private void StartListeners()
+    {
+        Query query = db.Collection("transactions").WhereEqualTo("type", "Withdrawal");
+        
+        _transactionsListener = query.Listen(async snapshot =>
+        {
+            var tempPending = new List<WithdrawalRequest>();
+            var tempCompleted = new List<WithdrawalRequest>();
+
+            foreach (var doc in snapshot.Documents)
+            {
+                string desc = doc.ContainsField("description") ? doc.GetValue<string>("description") : "";
+                var req = new WithdrawalRequest
+                {
+                    Id = doc.Id,
+                    UserId = doc.ContainsField("userId") ? doc.GetValue<string>("userId") : "Unknown",
+                    Amount = doc.ContainsField("amount") ? doc.GetValue<double>("amount") : 0,
+                    BankDetails = desc,
+                    Date = doc.ContainsField("date") ? doc.GetValue<DateTime>("date") : DateTime.UtcNow
+                };
+
+                if (desc.StartsWith("Pending Transfer:")) tempPending.Add(req);
+                else tempCompleted.Add(req);
+            }
+
+            await EnrichRequestData(tempPending);
+            await EnrichRequestData(tempCompleted);
+
+            // 🔥 THE FIX: Switch to the Dispatcher thread before calling StateHasChanged
+            await InvokeAsync(() =>
+            {
+                PendingWithdrawals = tempPending.OrderBy(w => w.Date).ToList();
+                CompletedWithdrawals = tempCompleted.OrderByDescending(w => w.Date).Take(50).ToList();
+                IsLoading = false;
+                StateHasChanged();
+            });
+        });
+    }
+
+    private async Task EnrichRequestData(List<WithdrawalRequest> list)
+    {
+        foreach (var req in list)
+        {
+            if (req.UserId != "Unknown")
+            {
+                var userDoc = await db.Collection("users").Document(req.UserId).GetSnapshotAsync();
+                if (userDoc.Exists)
+                {
+                    req.StudentName = userDoc.ContainsField("name") ? userDoc.GetValue<string>("name") : "UniMart Member";
+                    req.StudentEmail = userDoc.ContainsField("email") ? userDoc.GetValue<string>("email") : "No Email";
+                }
+            }
+        }
+    }
+
+    private async Task ApproveRequest(WithdrawalRequest request)
+    {
+        if (await JSRuntime.InvokeAsync<bool>("confirm", $"Approve payout of RM {request.Amount:F2} to {request.StudentName}?"))
+        {
+            string newDescription = request.BankDetails.Replace("Pending Transfer:", "Completed: Funds dispatched to");
+            await db.Collection("transactions").Document(request.Id).UpdateAsync("description", newDescription);
+        }
+    }
+
+    private async Task RejectRequest(WithdrawalRequest request)
+    {
+        if (await JSRuntime.InvokeAsync<bool>("confirm", $"Reject this request and return RM {request.Amount:F2} to {request.StudentName}'s wallet?"))
+        {
+            WriteBatch batch = db.StartBatch();
+            batch.Update(db.Collection("users").Document(request.UserId), "wallet.availableBalance", FieldValue.Increment(request.Amount));
+            batch.Update(db.Collection("transactions").Document(request.Id), "description", "Rejected: Transfer cancelled & funds returned.");
+            await batch.CommitAsync();
+        }
+    }
+
+    private string FormatUserId(string userId) => string.IsNullOrEmpty(userId) || userId.Length <= 8 ? userId : $"{userId.Substring(0, 5)}...{userId.Substring(userId.Length - 4)}";
+    
+    private string CleanBankName(string details) => details.Replace("Pending Transfer:", "").Replace("Completed:", "").Trim();
+
+    public void Dispose() => _transactionsListener?.StopAsync();
+
+    public class WithdrawalRequest
+    {
+        public string Id { get; set; }
+        public string UserId { get; set; }
+        public double Amount { get; set; }
+        public string BankDetails { get; set; }
+        public DateTime Date { get; set; }
+        public string StudentName { get; set; } = "Loading...";
+        public string StudentEmail { get; set; } = "Loading...";
+    }
+}

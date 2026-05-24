@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:UniMart.Models"
+             x:Class="UniMart.Views.HomePage"
+             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource OffBlack}}"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto, Auto, *">
+
+        <Border Grid.Row="0" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}" StrokeThickness="0" Padding="15,15,15,15">
+            <Border.Shadow>
+                <Shadow Brush="{StaticResource Black}" Offset="0,4" Radius="15" Opacity="0.05" />
+            </Border.Shadow>
+
+            <Grid ColumnDefinitions="Auto, *, Auto">
+                <HorizontalStackLayout Grid.Column="0" Spacing="0" VerticalOptions="Center">
+                    <Label Text="UniMart" FontSize="22" FontAttributes="Bold" TextColor="{StaticResource Primary}" VerticalOptions="Center"/>
+                </HorizontalStackLayout>
+
+                <Border Grid.Column="2" Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}" StrokeThickness="1" StrokeShape="RoundRectangle 20" BackgroundColor="{AppThemeBinding Light={StaticResource Secondary}, Dark={StaticResource Gray900}}" Padding="12,6">
+                    <HorizontalStackLayout Spacing="6">
+                        <Frame WidthRequest="24" HeightRequest="24" CornerRadius="12" BackgroundColor="{StaticResource Primary}" Padding="0" IsClippedToBounds="True" VerticalOptions="Center">
+                            <Label Text="U" TextColor="{StaticResource White}" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
+                        </Frame>
+                        <Label Text="RM" FontSize="12" TextColor="{StaticResource Primary}" FontAttributes="Bold" VerticalOptions="Center"/>
+                        <Label x:Name="WalletBalanceLabel" Text="0.00" FontSize="14" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" FontAttributes="Bold" VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                </Border>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*, Auto" Margin="15,15,15,0">
+            <Border Grid.Column="0" Stroke="{StaticResource Gray200}" StrokeThickness="1.5" StrokeShape="RoundRectangle 12" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}" Padding="15,0">
+                <Entry x:Name="SearchEntry" Placeholder="Search textbooks, tech, dorm gear..." TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" ClearButtonVisibility="WhileEditing" 
+                       Focused="OnSearchEntryFocused" 
+                       Completed="OnSearchEntryCompleted"
+                       TextChanged="OnSearchTextChanged"/>
+            </Border>
+
+            <Button x:Name="CancelSearchButton" Grid.Column="1" Text="Cancel" BackgroundColor="Transparent" TextColor="{StaticResource Primary}" FontAttributes="Bold" IsVisible="False" Clicked="OnCancelSearchClicked" Margin="5,0,0,0" Padding="10,0"/>
+        </Grid>
+
+        <ActivityIndicator x:Name="LoadingIndicator" Grid.Row="2" IsRunning="False" IsVisible="False" Color="{StaticResource Primary}" HorizontalOptions="Center" VerticalOptions="Center" ZIndex="10"/>
+
+        <RefreshView x:Name="FeedRefreshView" Grid.Row="2" Refreshing="OnRefreshing" RefreshColor="{StaticResource Primary}">
+            <CollectionView x:Name="ItemsCollectionView" Margin="15,0,15,0" SelectionMode="Single" SelectionChanged="OnItemSelected">
+
+                <CollectionView.Header>
+                    <VerticalStackLayout Spacing="20" Padding="0,15,0,15">
+
+                        <Border StrokeThickness="0" StrokeShape="RoundRectangle 16" BackgroundColor="{StaticResource Primary}" Padding="20">
+                            <Grid ColumnDefinitions="*, Auto" HorizontalOptions="Fill">
+                                <VerticalStackLayout Grid.Column="0" Spacing="5" VerticalOptions="Center">
+                                    <Label Text="Clear Your Space!" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource White}"/>
+                                    <Label Text="Turn your old gear into cash." FontSize="13" TextColor="{StaticResource Secondary}"/>
+                                </VerticalStackLayout>
+                                <Button Grid.Column="1" Text="Sell Now" BackgroundColor="{StaticResource White}" TextColor="{StaticResource Primary}" FontAttributes="Bold" CornerRadius="10" HeightRequest="40" Padding="15,0" VerticalOptions="Center" Clicked="OnSellNowClicked"/>
+                            </Grid>
+                        </Border>
+
+                        <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                            <HorizontalStackLayout x:Name="CategoryStack" Spacing="10" Padding="0,5,0,10">
+
+                                <Border StrokeThickness="0" StrokeShape="RoundRectangle 20" BackgroundColor="{StaticResource Primary}" Padding="15,8">
+                                    <Label Text="All Items" TextColor="{StaticResource White}" FontSize="13" FontAttributes="Bold"/>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnCategoryTapped" CommandParameter="All Items"/>
+                                    </Border.GestureRecognizers>
+                                </Border>
+
+                                <Border Stroke="{StaticResource Gray200}" StrokeThickness="1" StrokeShape="RoundRectangle 20" BackgroundColor="Transparent" Padding="15,8">
+                                    <Label Text="Electronics &amp; Gadgets" TextColor="{StaticResource Gray500}" FontSize="13" FontAttributes="Bold"/>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnCategoryTapped" CommandParameter="Electronics &amp; Gadgets"/>
+                                    </Border.GestureRecognizers>
+                                </Border>
+
+                                <Border Stroke="{StaticResource Gray200}" StrokeThickness="1" StrokeShape="RoundRectangle 20" BackgroundColor="Transparent" Padding="15,8">
+                                    <Label Text="Books &amp; Academic" TextColor="{StaticResource Gray500}" FontSize="13" FontAttributes="Bold"/>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnCategoryTapped" CommandParameter="Books &amp; Academic"/>
+                                    </Border.GestureRecognizers>
+                                </Border>
+
+                                <Border Stroke="{StaticResource Gray200}" StrokeThickness="1" StrokeShape="RoundRectangle 20" BackgroundColor="Transparent" Padding="15,8">
+                                    <Label Text="Fashion &amp; Clothing" TextColor="{StaticResource Gray500}" FontSize="13" FontAttributes="Bold"/>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnCategoryTapped" CommandParameter="Fashion &amp; Clothing"/>
+                                    </Border.GestureRecognizers>
+                                </Border>
+
+                                <Border Stroke="{StaticResource Gray200}" StrokeThickness="1" StrokeShape="RoundRectangle 20" BackgroundColor="Transparent" Padding="15,8">
+                                    <Label Text="Furniture &amp; Room Items" TextColor="{StaticResource Gray500}" FontSize="13" FontAttributes="Bold"/>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnCategoryTapped" CommandParameter="Furniture &amp; Room Items"/>
+                                    </Border.GestureRecognizers>
+                                </Border>
+
+                                <Border Stroke="{StaticResource Gray200}" StrokeThickness="1" StrokeShape="RoundRectangle 20" BackgroundColor="Transparent" Padding="15,8">
+                                    <Label Text="Food &amp; Daily Essentials" TextColor="{StaticResource Gray500}" FontSize="13" FontAttributes="Bold"/>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnCategoryTapped" CommandParameter="Food &amp; Daily Essentials"/>
+                                    </Border.GestureRecognizers>
+                                </Border>
+
+                                <Border Stroke="{StaticResource Gray200}" StrokeThickness="1" StrokeShape="RoundRectangle 20" BackgroundColor="Transparent" Padding="15,8">
+                                    <Label Text="Services" TextColor="{StaticResource Gray500}" FontSize="13" FontAttributes="Bold"/>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnCategoryTapped" CommandParameter="Services"/>
+                                    </Border.GestureRecognizers>
+                                </Border>
+
+                                <Border Stroke="{StaticResource Gray200}" StrokeThickness="1" StrokeShape="RoundRectangle 20" BackgroundColor="Transparent" Padding="15,8">
+                                    <Label Text="Gaming &amp; Entertainment" TextColor="{StaticResource Gray500}" FontSize="13" FontAttributes="Bold"/>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnCategoryTapped" CommandParameter="Gaming &amp; Entertainment"/>
+                                    </Border.GestureRecognizers>
+                                </Border>
+
+                                <Border Stroke="{StaticResource Gray200}" StrokeThickness="1" StrokeShape="RoundRectangle 20" BackgroundColor="Transparent" Padding="15,8">
+                                    <Label Text="Transport &amp; Travel" TextColor="{StaticResource Gray500}" FontSize="13" FontAttributes="Bold"/>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnCategoryTapped" CommandParameter="Transport &amp; Travel"/>
+                                    </Border.GestureRecognizers>
+                                </Border>
+
+                                <Border Stroke="{StaticResource Gray200}" StrokeThickness="1" StrokeShape="RoundRectangle 20" BackgroundColor="Transparent" Padding="15,8">
+                                    <Label Text="Personal Items" TextColor="{StaticResource Gray500}" FontSize="13" FontAttributes="Bold"/>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnCategoryTapped" CommandParameter="Personal Items"/>
+                                    </Border.GestureRecognizers>
+                                </Border>
+
+                                <Border Stroke="{StaticResource Gray200}" StrokeThickness="1" StrokeShape="RoundRectangle 20" BackgroundColor="Transparent" Padding="15,8">
+                                    <Label Text="Others" TextColor="{StaticResource Gray500}" FontSize="13" FontAttributes="Bold"/>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnCategoryTapped" CommandParameter="Others"/>
+                                    </Border.GestureRecognizers>
+                                </Border>
+
+                            </HorizontalStackLayout>
+                        </ScrollView>
+
+                        <Label Text="Fresh Drops" FontSize="18" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" Margin="0,5,0,0" IsVisible="{Binding HasListings}"/>
+                    </VerticalStackLayout>
+                </CollectionView.Header>
+
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Orientation="Vertical" Span="2" HorizontalItemSpacing="15" VerticalItemSpacing="15" />
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Listing">
+                        <Border Stroke="{StaticResource Gray200}" StrokeThickness="1" StrokeShape="RoundRectangle 16" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}" Padding="0">
+
+                            <Grid RowDefinitions="150, Auto">
+
+                                <Grid Grid.Row="0" BackgroundColor="{StaticResource Gray100}" IsClippedToBounds="True">
+                                    <ActivityIndicator IsRunning="{Binding Source={x:Reference ProductImage}, Path=IsLoading}" 
+                                                       IsVisible="{Binding Source={x:Reference ProductImage}, Path=IsLoading}" 
+                                                       Color="{StaticResource Gray300}" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="20" HeightRequest="20"/>
+                                    <Image x:Name="ProductImage" Source="{Binding CoverImage}" Aspect="AspectFill" HorizontalOptions="Fill" VerticalOptions="Fill" />
+                                </Grid>
+
+                                <Grid Grid.Row="1" RowDefinitions="Auto, Auto, Auto" Padding="12" RowSpacing="6">
+
+                                    <Label Grid.Row="0" Text="{Binding Title}" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" FontAttributes="Bold" LineBreakMode="TailTruncation" MaxLines="2" HeightRequest="38" />
+
+                                    <Grid Grid.Row="1" ColumnDefinitions="*, Auto">
+                                        <HorizontalStackLayout Grid.Column="0" Spacing="3" VerticalOptions="End" HorizontalOptions="Start">
+                                            <Label Text="RM" FontSize="11" TextColor="{StaticResource Primary}" FontAttributes="Bold" VerticalOptions="End" Margin="0,0,0,2"/>
+                                            <Label Text="{Binding Price, StringFormat='{0:F2}'}" FontSize="16" TextColor="{StaticResource Primary}" FontAttributes="Bold"/>
+                                        </HorizontalStackLayout>
+
+                                        <Label Grid.Column="1" Text="{Binding TimeAgo}" FontSize="10" TextColor="{StaticResource Gray500}" HorizontalOptions="End" VerticalOptions="End" FontAttributes="Italic"/>
+                                    </Grid>
+
+                                    <Label Grid.Row="2" Text="{Binding Category}" FontSize="11" TextColor="{StaticResource Gray500}" LineBreakMode="TailTruncation" MaxLines="1"/>
+                                </Grid>
+                            </Grid>
+
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+
+        <VerticalStackLayout Grid.Row="2" IsVisible="{Binding HasEmptyState}" VerticalOptions="Center" HorizontalOptions="Center" Spacing="10" Margin="0,100,0,0" InputTransparent="True" ZIndex="5">
+            <Image Source="no_results.png" HeightRequest="60" WidthRequest="60" HorizontalOptions="Center"/>
+            <Label Text="No Items Found" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource Gray900}" HorizontalOptions="Center"/>
+            <Label Text="Try adjusting your search or switching categories." FontSize="13" TextColor="{StaticResource Gray500}" HorizontalOptions="Center" HorizontalTextAlignment="Center" Margin="20,0"/>
+        </VerticalStackLayout>
+
+        <Grid x:Name="SearchOverlay" Grid.Row="2" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}" IsVisible="False" ZIndex="20" Padding="15,10,15,0">
+            <CollectionView x:Name="SearchSuggestionsCollectionView" SelectionMode="Single" SelectionChanged="OnSuggestionSelected">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Listing">
+                        <Border StrokeThickness="0" BackgroundColor="Transparent" Padding="0,15">
+                            <HorizontalStackLayout Spacing="15">
+                                <Image Source="search_icon.png" HeightRequest="16" WidthRequest="16" VerticalOptions="Center"/>
+                                <Label Text="{Binding Title}" FontSize="15" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" VerticalOptions="Center" FontAttributes="Bold"/>
+                            </HorizontalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
+
+    </Grid>
+</ContentPage>

@@ -1,0 +1,99 @@
+﻿<div class="unimart-login-bg d-flex justify-content-center align-items-center vh-100">
+    <div class="card p-4 border-0 shadow-lg position-relative" style="width: 100%; max-width: 420px; border-radius: 20px; background: rgba(255, 255, 255, 0.98);">
+        <div class="card-body">
+            
+            <div class="position-absolute top-0 start-0 end-0" style="height: 6px; background: linear-gradient(90deg, #0056B3, #0D6EFD); border-top-left-radius: 20px; border-top-right-radius: 20px;"></div>
+
+            <div class="text-center mb-4 mt-2">
+                <span class="text-uppercase small fw-bold text-muted" style="letter-spacing: 1.5px; font-size: 10px; display: block; margin-bottom: 4px;">Universiti Tenaga Nasional</span>
+                <h2 class="text-dark mb-1" style="font-weight: 800; letter-spacing: -0.5px;">UniMart Panel</h2>
+                <div class="mx-auto" style="width: 40px; height: 3px; background-color: #0056B3; border-radius: 2px; margin-top: 8px;"></div>
+            </div>
+            
+            @if (ShowError)
+            {
+                <div class="alert alert-danger py-2 small text-center border-0 mb-4 shadow-sm" style="border-radius: 8px; background-color: #F8D7DA; color: #842029;">
+                    <strong>Access Denied:</strong> Invalid system configuration key.
+                </div>
+            }
+
+            <div class="mb-3">
+                <label class="form-label small fw-bold text-secondary text-uppercase" style="letter-spacing: 0.5px; font-size: 11px;">Administrative ID</label>
+                <input class="form-control bg-light border-0 text-muted" value="admin@unimart.uniten.edu.my" disabled style="border-radius: 8px; padding: 12px; font-weight: 500;" />
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label small fw-bold text-secondary text-uppercase" style="letter-spacing: 0.5px; font-size: 11px;">Security Key</label>
+                <input type="password"
+                       class="form-control border-1 custom-input"
+                       @bind="InputPassword"
+                       @bind:event="oninput"
+                       @onkeyup="HandleKeyUp"
+                       placeholder="Enter system key..."
+                       style="border-radius: 8px; padding: 12px; border-color: #E2E3E5; background-color: #FFF;" />
+            </div>
+
+            <button class="btn btn-primary w-100 fw-bold shadow-sm btn-login-submit"
+                    @onclick="AttemptLogin"
+                    style="border-radius: 8px; background: linear-gradient(135deg, #0056B3, #0D6EFD); border: none; padding: 12px; transition: all 0.2s ease-in-out;">
+                Authorize Connection
+            </button>
+            
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Premium Midnight Mesh Gradient Backing Layer */
+    .unimart-login-bg {
+        background: linear-gradient(135deg, #0F2027 0%, #203A43 50%, #2C5364 100%);
+    }
+
+    /* Input Field Active Focus Transitions */
+    .custom-input:focus {
+        border-color: #0056B3 !important;
+        box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.15) !important;
+        outline: none;
+    }
+
+    /* Tactile Micro-Interactions on Submission Element */
+    .btn-login-submit:hover {
+        filter: brightness(1.1);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 86, 179, 0.25) !important;
+    }
+
+    .btn-login-submit:active {
+        transform: translateY(0);
+    }
+</style>
+
+@code {
+    [Parameter]
+    public EventCallback OnLoginSuccess { get; set; }
+
+    private string InputPassword = "";
+    private bool ShowError = false;
+
+    private async Task AttemptLogin()
+    {
+        if (InputPassword == "admin123")
+        {
+            ShowError = false;
+            await OnLoginSuccess.InvokeAsync();
+        }
+        else
+        {
+            ShowError = true;
+            InputPassword = "";
+        }
+    }
+
+    private async Task HandleKeyUp(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await AttemptLogin();
+        }
+    }
+}

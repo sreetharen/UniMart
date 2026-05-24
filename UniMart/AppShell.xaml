@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="UniMart.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:UniMart.Views"
+    Shell.FlyoutBehavior="Disabled">
+
+    <!-- REMOVED hardcoded colors so Styles.xaml can manage Light/Dark mode automatically -->
+
+    <TabBar>
+        <!-- NOTE: You must add these SVG files to your Resources/Images folder -->
+        <Tab Title="Home" Route="HomePage" Icon="icon_home.png">
+            <ShellContent ContentTemplate="{DataTemplate views:HomePage}" />
+        </Tab>
+
+        <Tab Title="Sell" Route="SellPage" Icon="icon_sell.png">
+            <ShellContent ContentTemplate="{DataTemplate views:AddListingPage}" />
+        </Tab>
+
+        <Tab Title="Wallet" Route="WalletPage" Icon="icon_wallet.png">
+            <ShellContent ContentTemplate="{DataTemplate views:WalletPage}" />
+        </Tab>
+        
+        <Tab Title="Inbox" Icon="chat_icon.png">
+            <ShellContent ContentTemplate="{DataTemplate views:ChatsPage}" />
+        </Tab>
+
+        <Tab Title="Profile" Route="ProfilePage" Icon="icon_profile.png">
+            <ShellContent ContentTemplate="{DataTemplate views:ProfilePage}" />
+        </Tab>
+    </TabBar>
+
+</Shell>

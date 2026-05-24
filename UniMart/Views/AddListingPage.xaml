@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="UniMart.Views.AddListingPage"
+             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource OffBlack}}"
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False">
+    <Grid>
+        <Grid x:Name="MainContentGrid" RowDefinitions="Auto, *, Auto">
+
+            <Border Grid.Row="0" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}" StrokeThickness="0" Padding="20,20,20,15">
+                <Border.Shadow>
+                    <Shadow Brush="Black" Offset="0,2" Radius="10" Opacity="0.05" />
+                </Border.Shadow>
+                <Grid ColumnDefinitions="Auto, *">
+                    <ImageButton x:Name="BackButton" Grid.Column="0" Source="back_icon.png" Clicked="OnBackClicked" HeightRequest="24" IsVisible="True" Padding="5" BackgroundColor="Transparent"/>
+                    <Label x:Name="PageTitleLabel" Grid.Column="1" Text="Create New Listing" FontSize="18" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" HorizontalOptions="Center" Margin="-24,0,0,0"/>
+                </Grid>
+            </Border>
+
+            <ScrollView x:Name="FormScrollView" Grid.Row="1" VerticalScrollBarVisibility="Never">
+                <VerticalStackLayout Padding="15,20,15,40" Spacing="25">
+
+                    <VerticalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnBackgroundTapped"/>
+                    </VerticalStackLayout.GestureRecognizers>
+
+                    <Border BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}" Stroke="{StaticResource Gray200}" StrokeThickness="1" StrokeShape="RoundRectangle 16" Padding="20">
+                        <Border.Shadow>
+                            <Shadow Brush="Black" Offset="0,4" Radius="15" Opacity="0.03" />
+                        </Border.Shadow>
+                        <VerticalStackLayout Spacing="15">
+                            <HorizontalStackLayout HorizontalOptions="FillAndExpand" Spacing="5">
+                                <Label Text="Item Photos" FontSize="16" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" VerticalOptions="Center"/>
+                                <Label x:Name="PhotoCountLabel" Text="(0/5)" FontSize="13" TextColor="{StaticResource Gray500}" VerticalOptions="Center"/>
+                            </HorizontalStackLayout>
+
+                            <Border x:Name="EmptyDropzone" Stroke="{StaticResource Primary}" StrokeThickness="2" StrokeDashArray="6,6" StrokeShape="RoundRectangle 12" BackgroundColor="#050056B3" HeightRequest="130" IsVisible="True">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnSelectPhotoClicked"/>
+                                </Border.GestureRecognizers>
+                                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="8">
+                                    <Label Text="+" FontSize="36" TextColor="{StaticResource Primary}" FontAttributes="Bold" HorizontalOptions="Center"/>
+                                    <Label Text="Select Photos" FontSize="14" TextColor="{StaticResource Primary}" FontAttributes="Bold" HorizontalOptions="Center"/>
+                                </VerticalStackLayout>
+                            </Border>
+
+                            <ScrollView x:Name="PhotoPreviewsScroll" Orientation="Horizontal" HorizontalScrollBarVisibility="Never" IsVisible="False">
+                                <HorizontalStackLayout Spacing="12">
+                                    <HorizontalStackLayout x:Name="PreviewImagesContainer" BindableLayout.ItemsSource="{Binding PreviewImages}" Spacing="12">
+                                        <BindableLayout.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid WidthRequest="110" HeightRequest="110">
+                                                    <Border StrokeThickness="0" StrokeShape="RoundRectangle 12">
+                                                        <Image Source="{Binding Image}" Aspect="AspectFill" />
+                                                    </Border>
+                                                    <Button Text="✕" Clicked="OnDeletePhotoClicked" CommandParameter="{Binding .}" HeightRequest="28" WidthRequest="28" CornerRadius="14" Padding="0" FontSize="12" BackgroundColor="#DC3545" TextColor="White" HorizontalOptions="End" VerticalOptions="Start" Margin="5"/>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </BindableLayout.ItemTemplate>
+                                    </HorizontalStackLayout>
+
+                                    <Border x:Name="SmallAddPhotoButton" Stroke="{StaticResource Primary}" StrokeThickness="1.5" StrokeDashArray="4,4" StrokeShape="RoundRectangle 12" BackgroundColor="#050056B3" WidthRequest="110" HeightRequest="110">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="OnSelectPhotoClicked"/>
+                                        </Border.GestureRecognizers>
+                                        <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="5">
+                                            <Label Text="+" FontSize="28" TextColor="{StaticResource Primary}" FontAttributes="Bold" HorizontalOptions="Center"/>
+                                            <Label Text="Add" FontSize="13" TextColor="{StaticResource Primary}" FontAttributes="Bold" HorizontalOptions="Center"/>
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </HorizontalStackLayout>
+                            </ScrollView>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}" Stroke="{StaticResource Gray200}" StrokeThickness="1" StrokeShape="RoundRectangle 16" Padding="20">
+                        <Border.Shadow>
+                            <Shadow Brush="Black" Offset="0,4" Radius="15" Opacity="0.03" />
+                        </Border.Shadow>
+                        <VerticalStackLayout Spacing="20">
+
+                            <Label Text="Item Details" FontSize="16" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
+
+                            <VerticalStackLayout Spacing="8">
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <Label Text="Title" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource Gray500}"/>
+                                    <Label x:Name="TitleCountLabel" Grid.Column="1" Text="0/50" FontSize="12" TextColor="{StaticResource Gray500}"/>
+                                </Grid>
+                                <Border Stroke="{StaticResource Gray200}" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="15,0" BackgroundColor="Transparent">
+                                    <Entry x:Name="TitleEntry" Placeholder="Enter listing title" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" MaxLength="50" TextChanged="OnTitleChanged" Focused="OnInputFocused" Unfocused="OnInputUnfocused" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Spacing="8">
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <Label Text="Description" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource Gray500}"/>
+                                    <Label x:Name="DescriptionCountLabel" Grid.Column="1" Text="0/500" FontSize="12" TextColor="{StaticResource Gray500}"/>
+                                </Grid>
+                                <Border Stroke="{StaticResource Gray200}" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="15,5" BackgroundColor="Transparent">
+                                    <Editor x:Name="DescriptionEditor" Placeholder="Provide details about the item's specifications and condition..." TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" HeightRequest="120" AutoSize="TextChanges" MaxLength="500" TextChanged="OnDescriptionChanged" Focused="OnInputFocused" Unfocused="OnInputUnfocused" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <Grid ColumnDefinitions="*, *" ColumnSpacing="15">
+                                <VerticalStackLayout Grid.Column="0" Spacing="8">
+                                    <Label Text="Category" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource Gray500}"/>
+                                    <Border Stroke="{StaticResource Gray200}" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="15,0" BackgroundColor="Transparent">
+                                        <Picker x:Name="CategoryPicker" Title="Select..." TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}">
+                                            <Picker.Items>
+                                                <x:String>Electronics &amp; Gadgets</x:String>
+                                                <x:String>Books &amp; Academic</x:String>
+                                                <x:String>Fashion &amp; Clothing</x:String>
+                                                <x:String>Furniture &amp; Room Items</x:String>
+                                                <x:String>Food &amp; Daily Essentials</x:String>
+                                                <x:String>Services</x:String>
+                                                <x:String>Gaming &amp; Entertainment</x:String>
+                                                <x:String>Transport &amp; Travel</x:String>
+                                                <x:String>Personal Items</x:String>
+                                                <x:String>Others</x:String>
+                                            </Picker.Items>
+                                        </Picker>
+                                    </Border>
+                                </VerticalStackLayout>
+
+                                <VerticalStackLayout Grid.Column="1" Spacing="8">
+                                    <Label Text="Condition" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource Gray500}"/>
+                                    <Border Stroke="{StaticResource Gray200}" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="15,0" BackgroundColor="Transparent">
+                                        <Picker x:Name="ConditionPicker" Title="Select..." TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}">
+                                            <Picker.Items>
+                                                <x:String>Brand New</x:String>
+                                                <x:String>Like New</x:String>
+                                                <x:String>Good</x:String>
+                                                <x:String>Fair</x:String>
+                                            </Picker.Items>
+                                        </Picker>
+                                    </Border>
+                                </VerticalStackLayout>
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}" Stroke="{StaticResource Gray200}" StrokeThickness="1" StrokeShape="RoundRectangle 16" Padding="20">
+                        <Border.Shadow>
+                            <Shadow Brush="Black" Offset="0,4" Radius="15" Opacity="0.03" />
+                        </Border.Shadow>
+                        <VerticalStackLayout Spacing="15">
+                            <Label Text="Pricing" FontSize="16" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>
+                            <VerticalStackLayout Spacing="8">
+                                <Label Text="Asking Price" FontSize="14" FontAttributes="Bold" TextColor="{StaticResource Gray500}"/>
+                                <Border Stroke="{StaticResource Primary}" StrokeThickness="2" StrokeShape="RoundRectangle 10" Padding="15,0" BackgroundColor="Transparent">
+                                    <Grid ColumnDefinitions="Auto,*">
+                                        <Label Text="RM" FontSize="18" FontAttributes="Bold" TextColor="{StaticResource Primary}" VerticalOptions="Center" Margin="0,0,10,0"/>
+                                        <Entry x:Name="PriceEntry" Grid.Column="1" Placeholder="0.00" Keyboard="Numeric" FontSize="18" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" Focused="OnInputFocused" Unfocused="OnInputUnfocused" Completed="OnPriceCompleted" />
+                                    </Grid>
+                                </Border>
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <ContentView x:Name="KeyboardSpacer" HeightRequest="0" />
+                </VerticalStackLayout>
+            </ScrollView>
+
+            <Border Grid.Row="2" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}" StrokeThickness="0" Padding="20,15,20,30">
+                <Border.Shadow>
+                    <Shadow Brush="Black" Offset="0,-10" Radius="20" Opacity="0.05" />
+                </Border.Shadow>
+                <Button x:Name="PostButton" Text="Publish Listing" FontSize="16" FontAttributes="Bold" TextColor="{StaticResource White}" BackgroundColor="{StaticResource Primary}" CornerRadius="12" HeightRequest="55" Clicked="OnPostClicked" />
+            </Border>
+        </Grid>
+
+        <Grid x:Name="StatusOverlay" IsVisible="False" BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}" ZIndex="100">
+            <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="20">
+
+                <VerticalStackLayout x:Name="LoadingStateContainer" IsVisible="True" Spacing="15" HorizontalOptions="Center">
+                    <ActivityIndicator IsRunning="True" Color="{StaticResource Primary}" HeightRequest="50" WidthRequest="50" HorizontalOptions="Center"/>
+                    <Label x:Name="LoadingStatusLabel" Text="Publishing Listing..." FontSize="18" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout x:Name="SuccessStateContainer" IsVisible="False" Spacing="15" HorizontalOptions="Center">
+                    <Frame WidthRequest="70" HeightRequest="70" CornerRadius="35" BackgroundColor="#198754" Padding="0" HorizontalOptions="Center" HasShadow="False">
+                        <Label Text="✓" FontSize="36" TextColor="White" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
+                    </Frame>
+                    <Label Text="Listing Published Successfully" FontSize="20" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </Grid>
+
+    </Grid>
+</ContentPage>

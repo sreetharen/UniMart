@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="UniMart.Views.PaymentSuccessPage"
+             BackgroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource OffBlack}}"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="*, Auto" Padding="25,40,25,40">
+
+        <VerticalStackLayout Grid.Row="0" VerticalOptions="Center" Spacing="20">
+
+            <Frame WidthRequest="100" HeightRequest="100" CornerRadius="50" BackgroundColor="#E8F5E9" BorderColor="Transparent" HorizontalOptions="Center" Padding="0">
+                <Label Text="✓" FontSize="50" TextColor="#28A745" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
+            </Frame>
+
+            <Label Text="Payment Successful!" FontSize="26" FontAttributes="Bold" TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" HorizontalOptions="Center" Margin="0,10,0,0"/>
+
+            <Label Text="Your funds have been securely locked in Escrow." FontSize="15" TextColor="{StaticResource Gray500}" HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
+
+            <Border BackgroundColor="{StaticResource Gray100}" StrokeThickness="0" StrokeShape="RoundRectangle 12" Padding="20,15" Margin="0,20,0,0" HorizontalOptions="Center">
+                <VerticalStackLayout Spacing="5">
+                    <Label Text="Amount Locked" FontSize="13" TextColor="{StaticResource Gray500}" HorizontalOptions="Center"/>
+                    <HorizontalStackLayout Spacing="4" HorizontalOptions="Center">
+                        <Label Text="RM" FontSize="16" TextColor="{StaticResource Primary}" FontAttributes="Bold" VerticalOptions="End" Margin="0,0,0,4"/>
+                        <Label x:Name="AmountLabel" Text="0.00" FontSize="32" TextColor="{StaticResource Primary}" FontAttributes="Bold"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+
+        <VerticalStackLayout Grid.Row="1" Spacing="15">
+            <Button Text="View Handover QR" FontAttributes="Bold" TextColor="{StaticResource White}" BackgroundColor="{StaticResource Primary}" CornerRadius="12" HeightRequest="55" Clicked="OnViewQRClicked"/>
+            <Button Text="Back to Home" FontAttributes="Bold" TextColor="{StaticResource Gray900}" BackgroundColor="{StaticResource Gray100}" CornerRadius="12" HeightRequest="55" Clicked="OnBackToHomeClicked"/>
+        </VerticalStackLayout>
+
+    </Grid>
+</ContentPage>

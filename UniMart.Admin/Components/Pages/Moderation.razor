@@ -1,0 +1,235 @@
+﻿@page "/moderation"
+@using Google.Cloud.Firestore
+@implements IDisposable
+@inject FirestoreDb db
+@inject IJSRuntime JSRuntime
+
+<PageTitle>System Moderation Console</PageTitle>
+
+<div class="moderation-workspace container mt-4 mb-5">
+    <div class="mb-4">
+        <h2 class="console-title fw-bold text-primary">System Moderation Console</h2>
+        <p class="console-subtitle text-muted">Oversee ecosystem operations and audit marketplace assets.</p>
+    </div>
+
+    <div class="workspace-navigation mb-4">
+        <div class="nav nav-pills custom-nav-pills gap-2">
+            <button class="nav-link @(ActiveTab == "Users" ? "active fw-bold shadow-sm" : "bg-light text-dark")"
+                    @onclick='() => SwitchTab("Users")' style="border-radius: 20px; padding: 8px 20px;">
+                User Directory
+            </button>
+            <button class="nav-link @(ActiveTab == "Items" ? "active fw-bold shadow-sm" : "bg-light text-dark")"
+                    @onclick='() => SwitchTab("Items")' style="border-radius: 20px; padding: 8px 20px;">
+                Marketplace Audit
+            </button>
+        </div>
+    </div>
+
+    @if (ActiveTab == "Users")
+    {
+        <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 custom-escrow-table">
+                    <thead class="table-light text-secondary">
+                        <tr>
+                            <th class="ps-4 fw-semibold py-3">Student</th>
+                            <th class="fw-semibold py-3">Email</th>
+                            <th class="fw-semibold py-3">Balance</th>
+                            <th class="fw-semibold py-3">Status</th>
+                            <th class="text-end pe-4 fw-semibold py-3">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (IsUsersLoading)
+                        {
+                            <tr><td colspan="5" class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></td></tr>
+                        }
+                        else
+                        {
+                            @foreach (var user in AllUsers)
+                            {
+                                <tr>
+                                    <td class="ps-4 py-3">
+                                        <div class="fw-bold text-dark">@user.StudentName</div>
+                                        <div class="text-muted small font-monospace">UID: @FormatId(user.Id)</div>
+                                    </td>
+                                    <td><span class="badge bg-light text-dark border">@user.Email</span></td>
+                                    <td class="fw-medium text-primary">RM @user.AvailableBalance.ToString("N2")</td>
+                                    <td>
+                                        <span class="badge rounded-pill px-3 py-2 @(user.AccountStatus == "Suspended" ? "bg-danger-subtle text-danger" : "bg-success-subtle text-success")">
+                                            @user.AccountStatus
+                                        </span>
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <button class="btn btn-sm fw-bold px-3 rounded-pill @(user.AccountStatus == "Suspended" ? "btn-outline-success" : "btn-outline-danger")"
+                                                @onclick="() => HandleSecurityToggle(user)">
+                                            @(user.AccountStatus == "Suspended" ? "Restore" : "Suspend")
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+    @if (ActiveTab == "Items")
+    {
+        <div class="card shadow-sm border-0 rounded-4 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0 custom-escrow-table">
+                    <thead class="table-light text-secondary">
+                        <tr>
+                            <th class="ps-4 fw-semibold py-3">Listing Details</th>
+                            <th class="fw-semibold py-3">Valuation</th>
+                            <th class="fw-semibold py-3">Status</th>
+                            <th class="fw-semibold py-3">Audit Flags</th>
+                            <th class="text-end pe-4 fw-semibold py-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (IsItemsLoading)
+                        {
+                            <tr><td colspan="5" class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></td></tr>
+                        }
+                        else
+                        {
+                            @foreach (var item in AllItems.OrderByDescending(i => i.ReportCount))
+                            {
+                                <tr class="@(item.ReportCount > 0 ? "table-danger" : "")">
+                                    <td class="ps-4 py-3">
+                                        <div class="fw-bold text-dark text-truncate" style="max-width: 250px;">@item.Title</div>
+                                        <div class="text-muted small">@item.Category</div>
+                                    </td>
+                                    <td class="fw-medium text-primary">RM @item.Price.ToString("N2")</td>
+                                    <td>
+                                        <span class="badge rounded-pill px-3 py-2 @GetStatusBadgeClass(item.Status)">
+                                            @item.Status
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (item.ReportCount > 0)
+                                        {
+                                            <span class="badge bg-danger rounded-pill px-3 py-2 shadow-sm">
+                                                @item.ReportCount Reports
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-light text-muted border rounded-pill px-3 py-2">
+                                                Clear
+                                            </span>
+                                        }
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <div class="d-flex justify-content-end gap-2">
+                                            @if (item.ReportCount > 0)
+                                            {
+                                                <button class="btn btn-sm btn-warning text-dark fw-bold rounded-pill px-3" @onclick="() => ViewItemReports(item)">View</button>
+                                                <button class="btn btn-sm btn-success fw-bold rounded-pill px-3" @onclick="() => HandleClearReports(item)">Clear</button>
+                                            }
+                                            @if (item.Status == "Available" || item.Status == "Reserved")
+                                            {
+                                                <button class="btn btn-sm btn-outline-danger fw-bold rounded-pill px-3" @onclick="() => HandleTakedown(item)">Takedown</button>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private string ActiveTab = "Users";
+    private List<PlatformUser> AllUsers = new();
+    private List<MarketplaceItem> AllItems = new();
+    private bool IsUsersLoading = true, IsItemsLoading = true;
+    private FirestoreChangeListener _usersListener, _itemsListener;
+
+    protected override void OnInitialized()
+    {
+        _usersListener = db.Collection("users").Listen(s =>
+        {
+            AllUsers = s.Documents.Select(d => new PlatformUser
+            {
+                Id = d.Id,
+                StudentName = d.GetValue<string>("name"),
+                Email = d.GetValue<string>("email"),
+                AvailableBalance = d.ContainsField("wallet.availableBalance") ? d.GetValue<double>("wallet.availableBalance") : 0,
+                AccountStatus = d.GetValue<string>("accountStatus") ?? "Active"
+            }).ToList();
+            InvokeAsync(StateHasChanged); IsUsersLoading = false;
+        });
+
+        _itemsListener = db.Collection("listings").Listen(s =>
+        {
+            AllItems = s.Documents.Select(d => new MarketplaceItem
+            {
+                Id = d.Id,
+                Title = d.GetValue<string>("title"),
+                Price = Convert.ToDouble(d.GetValue<object>("price") ?? 0),
+                Status = d.GetValue<string>("status"),
+                Category = d.GetValue<string>("category"),
+                ReportCount = d.ContainsField("reportCount") ? d.GetValue<int>("reportCount") : 0
+            }).ToList();
+            InvokeAsync(StateHasChanged); IsItemsLoading = false;
+        });
+    }
+
+    private string GetStatusBadgeClass(string status)
+    {
+        return status switch
+        {
+            "Available" => "bg-success-subtle text-success",
+            "Reserved" => "bg-warning-subtle text-warning",
+            "Sold" => "bg-primary-subtle text-primary",
+            "Removed" => "bg-secondary-subtle text-secondary",
+            _ => "bg-light text-dark border"
+        };
+    }
+
+    private async Task HandleTakedown(MarketplaceItem item)
+    {
+        if (item.Status == "Sold" || item.Status == "Removed")
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "This item is already finalized.");
+            return;
+        }
+        if (await JSRuntime.InvokeAsync<bool>("confirm", $"Force takedown {item.Title}?"))
+            await db.Collection("listings").Document(item.Id).UpdateAsync("status", "Removed");
+    }
+
+    private async Task HandleSecurityToggle(PlatformUser user)
+    {
+        bool isSuspended = user.AccountStatus == "Suspended";
+        if (await JSRuntime.InvokeAsync<bool>("confirm", $"Confirm {(isSuspended ? "Restore" : "Suspend")} {user.StudentName}?"))
+            await db.Collection("users").Document(user.Id).UpdateAsync("accountStatus", isSuspended ? "Active" : "Suspended");
+    }
+
+    private async Task HandleClearReports(MarketplaceItem item)
+    {
+        if (await JSRuntime.InvokeAsync<bool>("confirm", "Reset report count to 0?"))
+            await db.Collection("listings").Document(item.Id).UpdateAsync("reportCount", 0);
+    }
+
+    private async Task ViewItemReports(MarketplaceItem item)
+    {
+        var snapshot = await db.Collection("reports").WhereEqualTo("listingId", item.Id).GetSnapshotAsync();
+        var reportText = string.Join("\n\n", snapshot.Documents.Select(d => $"[{d.GetValue<Timestamp>("timestamp").ToDateTime()}] {d.GetValue<string>("reason")}"));
+        await JSRuntime.InvokeVoidAsync("alert", $"Reports for {item.Title}:\n\n{reportText}");
+    }
+
+    private void SwitchTab(string t) => ActiveTab = t;
+    private string FormatId(string id) => id.Length > 8 ? $"{id.Substring(0, 4)}...{id.Substring(id.Length - 4)}" : id;
+    public void Dispose() { _usersListener?.StopAsync(); _itemsListener?.StopAsync(); }
+
+    public class PlatformUser { public string Id, StudentName, Email, AccountStatus; public double AvailableBalance; }
+    public class MarketplaceItem { public string Id, Title, Category, Status; public double Price; public int ReportCount; }
+}

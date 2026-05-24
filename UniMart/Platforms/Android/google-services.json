@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "190230731837",
+    "project_id": "unimart-97506",
+    "storage_bucket": "unimart-97506.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:190230731837:android:28eacf1f208bcc29219e54",
+        "android_client_info": {
+          "package_name": "com.student.unimart"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBsymYwvDXPb4Z6sy7QBLHzDEZ7YCH-uxE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
