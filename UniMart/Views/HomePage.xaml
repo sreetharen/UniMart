@@ -139,6 +139,13 @@
                                     </Border.GestureRecognizers>
                                 </Border>
 
+                                <Border Stroke="{StaticResource Gray200}" StrokeThickness="1" StrokeShape="RoundRectangle 20" BackgroundColor="Transparent" Padding="15,8">
+                                    <Label Text="Gaming" TextColor="{StaticResource Gray500}" FontSize="13" FontAttributes="Bold"/>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnCategoryTapped" CommandParameter="Others"/>
+                                    </Border.GestureRecognizers>
+                                </Border>
+
                             </HorizontalStackLayout>
                         </ScrollView>
 

@@ -361,3 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Firebase service account credentials
+UniMart.Admin/firebase-key.json
+UniMart.Admin/firebase-key-old.json

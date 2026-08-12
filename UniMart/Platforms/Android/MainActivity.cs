@@ -25,6 +25,9 @@ namespace UniMart
         {
             base.OnCreate(savedInstanceState);
 
+            // Add this line right here to allow screen recording on all pages
+            Window?.ClearFlags(WindowManagerFlags.Secure);
+
             // Prevent Firebase reinitialization crash on app resume
             if (FirebaseApp.Instance == null)
             {

@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Maui.Controls;
-using Microsoft.Maui.ApplicationModel; // Ensure this is included for MainThread
+using Microsoft.Maui.ApplicationModel;
 
 namespace UniMart.Views
 {
@@ -81,10 +81,10 @@ namespace UniMart.Views
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Catches wrong passwords OR unregistered emails
-                ShowError("Invalid credentials or unregistered account.");
+                // 🔥 NOW FIREBASE WILL TELL YOU EXACTLY WHAT IS WRONG
+                ShowError($"Error: {ex.Message}");
             }
         }
 

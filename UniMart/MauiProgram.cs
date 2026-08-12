@@ -27,18 +27,20 @@ namespace UniMart
             builder.Services.AddSingleton<TransactionEngine>();
 
             // 3. DEPENDENCY INJECTION: Views (Pages)
-            // 🔥 THE FIX: Removed the Shell Tabs (Home, Sell, Wallet, Profile, Inbox) 
-            // from the DI container. AppShell must manage their memory lifecycle natively to prevent wake-up crashes.
+            // AppShell manages the core tab pages natively. 
+            // Sub-pages pushed manually onto the stack via "new PageName()" are commented out here 
+            // to prevent Dependency Injection constructor collisions at startup.
 
-            // Hidden Pages (Pages that are pushed onto the navigation stack MUST stay Transient)
-            builder.Services.AddTransient<CheckoutPage>();
-            builder.Services.AddTransient<ItemDetailsPage>();
-            builder.Services.AddTransient<MeetupChatPage>();
-            builder.Services.AddTransient<BuyerHandoverPage>();
-            builder.Services.AddTransient<SellerScannerPage>();
-            builder.Services.AddTransient<SellerDashboardPage>();
-            builder.Services.AddTransient<BuyerOrdersPage>();
-            builder.Services.AddTransient<NoInternetPage>();
+            // builder.Services.AddTransient<CheckoutPage>();
+            // builder.Services.AddTransient<ItemDetailsPage>();
+            // builder.Services.AddTransient<MeetupChatPage>(); 
+            // builder.Services.AddTransient<BuyerHandoverPage>();
+            // builder.Services.AddTransient<SellerScannerPage>();
+            // builder.Services.AddTransient<SellerDashboardPage>();
+            // builder.Services.AddTransient<BuyerOrdersPage>();
+            // builder.Services.AddTransient<NoInternetPage>();
+
+            // Kept as Transient only if your App.xaml.cs resolves the login page through the service provider
             builder.Services.AddTransient<LoginPage>();
 
             return builder.Build();
